@@ -1,0 +1,31 @@
+--- twinkle.orig/src/gui/diamondcardprofileform.cpp	2016-10-07 11:06:34.000000000 +0300
++++ twinkle/src/gui/diamondcardprofileform.cpp	2019-01-15 15:07:47.945198463 +0300
+@@ -21,6 +21,7 @@
+ 
+ #include <QRegExp>
+ #include <QValidator>
++#include <QRegExpValidator>
+ #include "gui.h"
+ #include "diamondcard.h"
+ #include "getprofilenameform.h"
+--- twinkle.orig/src/gui/getprofilenameform.cpp	2016-10-07 11:06:34.000000000 +0300
++++ twinkle/src/gui/getprofilenameform.cpp	2019-01-15 15:07:47.949198463 +0300
+@@ -1,7 +1,7 @@
+ #include "getprofilenameform.h"
+-
+ #include <QDir>
+ #include <QMessageBox>
++#include <QRegExpValidator>
+ #include "user.h"
+ #include "protocol.h"
+ 
+--- twinkle.orig/src/gui/inviteform.cpp	2016-10-07 11:06:34.000000000 +0300
++++ twinkle/work/twinkle/src/gui/inviteform.cpp	2019-01-15 15:07:47.957198463 +0300
+@@ -7,6 +7,7 @@
+ #include "sys_settings.h"
+ #include <QRegExp>
+ #include <QValidator>
++#include <QRegExpValidator>
+ 
+ /*
+     Copyright (C) 2005-2009  Michel de Boer <michel@twinklephone.com>
