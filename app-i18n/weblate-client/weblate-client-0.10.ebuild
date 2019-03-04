@@ -25,10 +25,6 @@ REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 
 S="${WORKDIR}/wlc-${PV}"
 
-#src_configure() {
-#	default
-#	mv 
-#}
-
-#src_test() {
-#}
+python_test() {
+	esetup.py test
+}
