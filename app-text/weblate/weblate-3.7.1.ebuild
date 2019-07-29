@@ -8,13 +8,21 @@ inherit distutils-r1
 
 DESCRIPTION="Weblate commandline client using Weblate's REST API."
 HOMEPAGE="https://weblate.org"
-SRC_URI="https://github.com/WeblateOrg/wlc/archive/${PV}.tar.gz -> ${P}.tar.gz"
-
+SRC_URI="https://github.com/WeblateOrg/weblate/releases/download/${P}/Weblate-${PV}.tar.gz -> ${P}.tar.gz"
 LICENSE="GPL-3+"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
 
 COMMON_DEPEND="
+	dev-libs/libxml2
+	dev-libs/libxslt
+	media-libs/freetype
+	virtual/jpeg
+	sys-libs/zlib
+	dev-libs/libyaml
+	x11-libs/cairo
+
+	dev-python/pytest-runner
 	dev-python/pyxdg
 	dev-python/requests"
 
@@ -24,7 +32,7 @@ DEPEND="
 RDEPEND="
 	${COMMON_DEPEND}
 "
-S="${WORKDIR}/wlc-${PV}"
+S="${WORKDIR}/Weblate-${PV}"
 
 #src_configure() {
 #	default
