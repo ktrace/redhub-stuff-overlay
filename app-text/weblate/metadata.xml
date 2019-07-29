@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+<maintainer type="person">
+	<email>ktrace@yandex.ru</email>
+	<name>Victor Kustov</name>
+</maintainer>
+<maintainer type="project">
+	<email>proxy-maint@gentoo.org</email>
+	<name>Proxy Maintainers</name>
+</maintainer>
+<upstream>
+	<remote-id type="github">WeblateOrg/weblate</remote-id>
+</upstream>
+<longdescription lang="en">
+	Weblate.org webbased localization tool with tight Git integration supporting a wide range of file formats,
+	making it easy for translators to contribute. Weblate selfhosted translation service.
+</longdescription>
+</pkgmetadata>
