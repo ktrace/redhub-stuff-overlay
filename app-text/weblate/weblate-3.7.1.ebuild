@@ -41,3 +41,18 @@ S="${WORKDIR}/Weblate-${PV}"
 
 #src_test() {
 #}
+
+
+
+dev-go/siphash
+dev-python/whoosh
+dev-python/translate-toolkit
+dev-python/lxml
+dev-python/pillow
+dev-python/defusedxml
+dev-python/bleach >= 3.1.0
+dev-python/six
+dev-python/python-dateutil
+dev-python/django-crispy-forms > 1.6.1
+dev-python/oauthlib >= 3.0.0
+dev-python/djangorestframework > 3.8
