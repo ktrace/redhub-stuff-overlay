@@ -19,6 +19,7 @@ DEPEND="dev-cpp/commoncpp2
 	dev-libs/ucommon
 	media-libs/fontconfig
 	media-libs/libsndfile
+	net-libs/ccrtp
 	alsa? ( media-libs/alsa-lib )
 	g729? ( media-plugins/mediastreamer-bcg729 )
 	ilbc? ( dev-libs/ilbc-rfc3951 )
