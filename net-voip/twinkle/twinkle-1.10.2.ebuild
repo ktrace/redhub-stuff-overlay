@@ -1,9 +1,9 @@
-# Copyright 2019 Gentoo Authors
+# Copyright 1999-2021 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-inherit  cmake-utils
+inherit  cmake
 
 DESCRIPTION="Softphone for VoIP communcations using SIP protocol"
 HOMEPAGE="http://twinkle.dolezel.info/"
@@ -30,8 +30,6 @@ DEPEND="dev-cpp/commoncpp2
 RDEPEND="${DEPEND}"
 BDEPEND=""
 
-#PATCHES=( "${FILESDIR}"/${P}-regexp-validator.patch )
-
 src_configure() {
 
 	local mycmakeargs=(
@@ -42,5 +40,5 @@ src_configure() {
 		-DWITH_QT5=$(usex qt5)
 		-DWITH_SPEEX=$(usex speex)
 	)
-	cmake-utils_src_configure
+	cmake_src_configure
 }
