@@ -1,7 +1,9 @@
-# Copyright 1999-2019 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
+
+inherit cmake
 
 DESCRIPTION="GNU ccRTP - Implementation of the IETF real-time transport protocol"
 HOMEPAGE="https://www.gnu.org/software/ccrtp/"
@@ -13,7 +15,6 @@ IUSE="doc"
 SLOT="0/2"
 
 RDEPEND="
-	>=dev-cpp/commoncpp2-1.3.0:0=
 	dev-libs/libgcrypt:0=
 	>=dev-libs/ucommon-6.2.2:=
 "
@@ -21,13 +22,4 @@ DEPEND="${RDEPEND}
 	virtual/pkgconfig
 	doc? ( app-doc/doxygen )
 "
-
-src_configure() {
-	econf --disable-static
-}
-
-src_install() {
-	use doc && HTML_DOCS="doc/html/*"
-	default
-	find "${D}" -name '*.la' -delete || die
-}
+PATCHES=( "${FILESDIR}"/"${PN}-${PV}"-gcrypt-only.patch )

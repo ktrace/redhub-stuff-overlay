@@ -1,0 +1,34 @@
+diff --git a/CMakeLists.orig b/CMakeLists.txt
+index 8fa5841..7601b2d 100644
+--- a/CMakeLists.orig
++++ b/CMakeLists.txt
+@@ -68,11 +68,11 @@ include(CapeMakeTargets)
+ 
+ enable_arg(srtp true)
+ 
+-if(CMAKE_COMPILER_IS_GNUCXX)
+-  add_definitions(-g -O2 -fno-strict-aliasing)
+-  add_definitions(-Wno-long-long -Wno-char-subscripts)
+-  add_definitions(-Wall -ansi -pedantic)
+-endif()
++#if(CMAKE_COMPILER_IS_GNUCXX)
++#  add_definitions(-g -O2 -fno-strict-aliasing)
++#  add_definitions(-Wno-long-long -Wno-char-subscripts)
++#  add_definitions(-Wall -ansi -pedantic)
++#endif()
+ 
+ if(WIN32 AND NOT CYGWIN AND NOT MSYS AND NOT MINGW)
+   check_include_files(openssl/ssl.h HAVE_OPENSSL_WINDOWS)
+@@ -83,10 +83,11 @@ endif()
+ if (enable_srtp)
+   # now get info about crypto libraries
+   gcr_check(GCRYPT gcrypt)
+-  if (GCRYPT_FOUND AND NOT OPENSSL_FOUND)
++  if (GCRYPT_FOUND)
+     set(SRTP_SUPPORT TRUE)
+     check_include_files(gcrypt.h HAVE_GCRYPT_H)
+     set(LIBS ${LIBS} ${GCRYPT_LIBRARIES})
++    message(STATUS "  Using GCRYPT !")
+   else ()
+     set(GCRYPT_FOUND FALSE)
+     if (OPENSSL_FOUND OR HAVE_OPENSSL_WINDOWS)
