@@ -5,9 +5,11 @@ Best ebuilds for best and most useful apps will move in main tree.
 
 ADDED:
 - twinkle
+- Weblate client (CLI)
 
 TODO:
-- Weblate (both client & server)
+- Weblate server
+- Weblate CLI testing
 - torrentpier
 - pvpgn (maybe move to game overlay)
 - veyon
