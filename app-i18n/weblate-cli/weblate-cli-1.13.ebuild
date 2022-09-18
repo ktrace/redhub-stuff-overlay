@@ -14,6 +14,8 @@ LICENSE="GPL-3+"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
 
+PATCHES=( "${FILESDIR}/01-fix-python-warnings.patch" )
+
 COMMON_DEPEND="
 	dev-python/argcomplete
 	dev-python/python-dateutil
@@ -27,3 +29,12 @@ RDEPEND="
 	${COMMON_DEPEND}
 "
 S="${WORKDIR}/wlc-${PV}"
+
+
+python_test() {
+        distutils_install_for_testing
+
+        "${EPYTHON}" wlc/test_main.py || die
+        "${EPYTHON}" wlc/test_base.py || die
+        "${EPYTHON}" wlc/test_wlc.py || die
+}
