@@ -1,0 +1,57 @@
+diff --git a/setup.cfg b/setup.cfg
+index c12464e..b730916 100644
+--- a/setup.cfg
++++ b/setup.cfg
+@@ -8,7 +8,7 @@ url = https://weblate.org/
+ author = Michal Čihař
+ author_email = michal@cihar.com
+ license = GPL-3.0-or-later
+-license_file = LICENSE
++license_files = LICENSE
+ platforms = any
+ classifiers =
+     Development Status :: 5 - Production/Stable
+@@ -36,10 +36,14 @@ project_urls =
+     Funding=https://weblate.org/donate/
+ 
+ [options]
+-packages = wlc
+-python_requires = >=3.6
++packages =
++    wlc
++    wlc.test_data
++    wlc.test_data.api
++    wlc.test_data.mock
+ package_dir = wlc=wlc
+-include_package_data = 1
++python_requires = >=3.6
++include_package_data = True
+ 
+ [options.entry_points]
+ console_scripts =
+diff --git a/wlc/test_main.py b/wlc/test_main.py
+index 9156c3a..b91b53a 100644
+--- a/wlc/test_main.py
++++ b/wlc/test_main.py
+@@ -28,7 +28,7 @@ import wlc
+ from wlc.config import WeblateConfig
+ from wlc.main import Version, main
+ 
+-from .test_base import APITest
++from wlc.test_base import APITest
+ 
+ TEST_DATA = os.path.join(os.path.dirname(__file__), "test_data")
+ TEST_CONFIG = os.path.join(TEST_DATA, "wlc")
+diff --git a/wlc/test_wlc.py b/wlc/test_wlc.py
+index 14c8ccf..fd5e555 100644
+--- a/wlc/test_wlc.py
++++ b/wlc/test_wlc.py
+@@ -34,7 +34,7 @@ from wlc import (
+     WeblateException,
+ )
+ 
+-from .test_base import APITest
++from wlc.test_base import APITest
+ 
+ 
+ class WeblateErrorTest(APITest):
