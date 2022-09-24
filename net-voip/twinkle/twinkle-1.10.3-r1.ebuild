@@ -14,8 +14,7 @@ SLOT="0"
 KEYWORDS="~amd64 ~x86"
 IUSE="alsa diamondcard g729 ilbc speex +qt5"
 
-DEPEND="dev-cpp/commoncpp2
-	dev-libs/boost
+DEPEND="dev-libs/boost
 	dev-libs/ucommon
 	dev-libs/libxml2
 	media-libs/fontconfig
