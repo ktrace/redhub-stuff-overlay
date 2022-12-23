@@ -1,0 +1,15 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 1c0ab6c..ca2e960 100755
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -92,8 +92,7 @@ endif()
+ # set to true for debug and trace during CMakeLists development
+ # set(CMAKE_VERBOSE_MAKEFILE TRUE)
+ 
+-execute_process(COMMAND git rev-parse --short HEAD OUTPUT_VARIABLE GIT_COMMIT)
+-STRING(REGEX REPLACE "(\r?\n)+$" "" GIT_COMMIT "${GIT_COMMIT}")
++set(GIT_COMMIT "cd4fa50")
+ 
+ # include most of the fine stuff we need
+ include(FindPkgConfig)
+

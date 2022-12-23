@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+   <maintainer type="person" proxied="yes">
+     <email>ktrace@yandex.ru</email>
+     <name>Victor V. Kustov</name>
+   </maintainer>
+   <longdescription lang="en">
+       This package provides a library that adds ZRTP support to the GNU ccRTP
+    stack and serves as library for other RTP stacks (PJSIP, GStreamer). Phil
+    Zimmermann developed ZRTP to allow ad-hoc, easy to use key negotiation
+    to setup Secure RTP (SRTP) sessions.
+       The GNU ZRTP implementation is compliant to RFC 6189 and adds some
+    more algorithms.
+   </longdescription>
+</pkgmetadata>
