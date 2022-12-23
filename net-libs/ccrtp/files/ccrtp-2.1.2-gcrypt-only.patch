@@ -32,3 +32,15 @@ index 8fa5841..7601b2d 100644
    else ()
      set(GCRYPT_FOUND FALSE)
      if (OPENSSL_FOUND OR HAVE_OPENSSL_WINDOWS)
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 59b9f1b..1a20bee 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -60,7 +60,7 @@ else()
+ endif()
+ 
+ add_library(ccrtp ${BUILD_LIBRARY_TYPE} ${ccrtp_srcs} ${crypto_srcs} ${skein_srcs} ${twofish_srcs})
+-set_target_properties(ccrtp PROPERTIES VERSION ${LIB_VERSION} SOVERSION ${SOVERSION})
++set_target_properties(ccrtp PROPERTIES VERSION ${VERSION} SOVERSION ${VERSION})
+ target_link_libraries(ccrtp commoncpp ${LIBS})
+ add_dependencies(ccrtp commoncpp)
