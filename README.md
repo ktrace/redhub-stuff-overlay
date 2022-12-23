@@ -6,6 +6,7 @@ Best ebuilds for best and most useful apps will move in main tree.
 ADDED:
 - twinkle
 - Weblate client (CLI)
+- zrtp for twinkle
 
 TODO:
 - Weblate server
@@ -15,7 +16,6 @@ TODO:
 - veyon
 - gitprep
 - kamailio
-- zrtp for twinkle
 
 How to use:
 
