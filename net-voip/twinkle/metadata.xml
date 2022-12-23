@@ -16,6 +16,7 @@
 			<flag name="diamondcard"></flag>
 			<flag name="g729">G.729 codec</flag>
 			<flag name="ilbc"></flag>
+			<flag name="zrtp">RTP compression</flag>
 	</use> 
 	<upstream>
 		<remote-id type="github">LubosD/twinkle</remote-id>

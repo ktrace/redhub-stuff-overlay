@@ -15,7 +15,6 @@ IUSE="doc"
 SLOT="0"
 
 RDEPEND="
-	dev-cpp/commoncpp2:0=
 	dev-libs/libgcrypt:0=
 	>=dev-libs/ucommon-6.2.2:=
 	net-libs/ccrtp

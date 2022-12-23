@@ -12,7 +12,7 @@ SRC_URI="https://github.com/LubosD/twinkle/archive/v${PV}.tar.gz -> ${P}.tar.gz"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
-IUSE="alsa diamondcard g729 ilbc speex +qt5"
+IUSE="alsa diamondcard g729 ilbc speex +qt5 +zrtp"
 
 DEPEND="dev-libs/boost
 	dev-libs/ucommon
@@ -23,9 +23,8 @@ DEPEND="dev-libs/boost
 	alsa? ( media-libs/alsa-lib )
 	g729? ( media-libs/bcg729 )
 	ilbc? ( media-libs/libilbc )
-	speex? ( media-libs/speex )"
-
-#	zrtp? ( net-libs/libzrtpcpp )
+	speex? ( media-libs/speex )
+	zrtp? ( net-libs/zrtpcpp )"
 
 RDEPEND="${DEPEND}"
 BDEPEND=""
