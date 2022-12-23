@@ -1,0 +1,47 @@
+diff --git a/cryptcommon/ZrtpRandom.cpp b/cryptcommon/ZrtpRandom.cpp
+index 64db1d2..9c4d3f7 100644
+--- a/cryptcommon/ZrtpRandom.cpp
++++ b/cryptcommon/ZrtpRandom.cpp
+@@ -161,7 +161,7 @@ size_t ZrtpRandom::getSystemSeed(uint8_t *seed, size_t length)
+     return num;
+ }
+ 
+-int zrtp_AddEntropy(const uint8_t *buffer, uint32_t length, bool isLocked) {
++int zrtp_AddEntropy(const uint8_t *buffer, uint32_t length, int32_t isLocked) {
+     return ZrtpRandom::addEntropy(buffer, length, isLocked);
+ }
+ 
+diff --git a/cryptcommon/ZrtpRandom.h b/cryptcommon/ZrtpRandom.h
+index ee8640a..0b9b63d 100644
+--- a/cryptcommon/ZrtpRandom.h
++++ b/cryptcommon/ZrtpRandom.h
+@@ -42,8 +42,8 @@ public:
+      * entropy.
+      *
+      * @param buffer some entropy data to add
+-     *
+      * @param length length of entropy data in bytes
++     * @param isLocked Set to true when randomLock mutex is already set.
+      *
+      * @return on success: number of entropy bytes added, on failure: -1. Number of
+      *         bytes added may be bigger then @c length because of added system
+@@ -55,9 +55,7 @@ public:
+      * @brief Get some random data.
+      *
+      * @param buffer that will contain the random data
+-     *
+      * @param length how many bytes of random data to generate
+-     *
+      * @return the number of generated random data bytes
+      */
+     static int getRandomData(uint8_t *buffer, uint32_t length);
+@@ -74,7 +72,7 @@ extern "C"
+ {
+ #endif
+ 
+-int zrtp_AddEntropy(const uint8_t *buffer, uint32_t length, bool isLocked);
++int zrtp_AddEntropy(const uint8_t *buffer, uint32_t length, int32_t isLocked);
+ 
+ int zrtp_getRandomData(uint8_t *buffer, uint32_t length);
+ 
+
