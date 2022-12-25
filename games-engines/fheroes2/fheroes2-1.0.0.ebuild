@@ -13,15 +13,11 @@ KEYWORDS="~amd64"
 
 inherit cmake
 
-DEPEND="media-libs/libsdl2
-media-libs/sdl2-mixer
-sys-libs/zlib
-media-libs/sdl2-image
-media-libs/libpng
+DEPEND="media-libs/libpng
+		media-libs/libsdl2
+		media-libs/sdl2-image
+		media-libs/sdl2-mixer
+		sys-libs/zlib
 "
 
 RDEPEND="${DEPEND}"
-BDEPEND=""
-
-
-#-- Found Threads: TRUE
