@@ -5,9 +5,9 @@ EAPI=8
 
 DESCRIPTION="Recreation of the Heroes of Might and Magic II game engine"
 HOMEPAGE="https://ihhub.github.io/fheroes2/"
-SRC_URI="https://github.com/ihhub/${PN}/archive/refs/tags/${PV}.tar.gz"
+SRC_URI="https://github.com/ihhub/${PN}/archive/refs/tags/${PV}.tar.gz -> ${P}.tar.gz"
 
-LICENSE="GPLv2"
+LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64"
 

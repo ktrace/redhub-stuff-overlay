@@ -23,8 +23,7 @@ DEPEND="${RDEPEND}
 	virtual/pkgconfig
 "
 
-PATCHES=( "${FILESDIR}/${P}-bool-fix.patch" 
+PATCHES=( "${FILESDIR}/${P}-bool-fix.patch"
 		  "${FILESDIR}/${P}-no-git-commit.patch" )
 
 S="${WORKDIR}/${P^^}"
-

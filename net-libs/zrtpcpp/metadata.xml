@@ -13,4 +13,7 @@
        The GNU ZRTP implementation is compliant to RFC 6189 and adds some
     more algorithms.
    </longdescription>
+   <upstream>
+      <remote-id type="github">wernerd/ZRTPCPP</remote-id>
+   </upstream>
 </pkgmetadata>

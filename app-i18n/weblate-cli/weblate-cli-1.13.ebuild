@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
-PYTHON_COMPAT=( python3_{9,10} )
+PYTHON_COMPAT=( python3_{9,10,11} )
 
 inherit distutils-r1
 
@@ -29,7 +29,6 @@ RDEPEND="
 	${COMMON_DEPEND}
 "
 S="${WORKDIR}/wlc-${PV}"
-
 
 python_test() {
 	distutils_install_for_testing
