@@ -2,34 +2,21 @@ diff --git a/src/html.c b/src/html.c
 index dc64cf4b8..da119c4e9 100644
 --- a/src/html.c
 +++ b/src/html.c
-@@ -135,36 +135,66 @@ gchar *sc_html_parse(SC_HTMLParser *parser)
+@@ -135,36 +135,47 @@ gchar *sc_html_parse(SC_HTMLParser *parser)
  static SC_HTMLState sc_html_read_line(SC_HTMLParser *parser)
  {
  	gchar buf[SC_HTMLBUFSIZE];
 -	gchar buf2[SC_HTMLBUFSIZE*4];
 -	gint index;
 -	gint n;
--
--	if (parser->fp == NULL)
--		return SC_HTML_EOF;
 +//	gchar buf2[SC_HTMLBUFSIZE*4];
 +	gchar *invalid, *head, *tail;
 +	gint index, n;
 +	gint tail_size = 0;
-+
+ 
+-	if (parser->fp == NULL)
+-		return SC_HTML_EOF;
 +	invalid = NULL; tail = NULL;
-+	g_warning(":: start");
-+
-+	do {
-+		g_warning(":: do");
-+		if (parser->fp == NULL)
-+			return SC_HTML_EOF; // check parser->state???
-+		g_warning(":: do continue");
-+
-+		head = buf;
-+		if (tail_size > 0) {
-+		    head = g_stpcpy(buf,tail);
-+		}
  
 -	n = claws_fread(buf, 1, sizeof(buf) - 1, parser->fp);
 -	if (n == 0) {
@@ -37,17 +24,30 @@ index dc64cf4b8..da119c4e9 100644
 -		return SC_HTML_EOF;
 -	} else
 -		buf[n] = '\0';
+-
+-	if (conv_convert(parser->conv, buf2, sizeof(buf2), buf) < 0) {
+-		index = parser->bufp - parser->buf->str;
++	do {
++		if (parser->fp == NULL)
++			return SC_HTML_EOF; // check parser->state???
+ 
+-		conv_utf8todisp(buf2, sizeof(buf2), buf);
+-		g_string_append(parser->buf, buf2);
++		head = buf;
++		if (tail_size > 0) {
++		    head = g_stpcpy(buf,tail);
++		}
+ 
+-		parser->bufp = parser->buf->str + index;
 +		n = claws_fread(head, 1, sizeof(buf) - tail_size - 1, parser->fp);
 +		if (n == 0) {
 +			parser->state = SC_HTML_EOF;
 +			g_free(tail);
-+	        g_warning(":: end with EOF");
 +			return SC_HTML_EOF;
 +		} else {
 +			head[n] = '\0';
 +			g_free(tail);
 +			tail_size = 0;
-+			g_warning(":: Read %i bytes; buf '%s'", n, buf);
 +        }
 +
 +
@@ -55,55 +55,20 @@ index dc64cf4b8..da119c4e9 100644
 +			tail_size = head + n - invalid;
 +			tail = g_strdup(invalid);
 +			invalid[0] = '\0';
-+			g_warning(":: Got tail %i bytes; tail '%s'", tail_size, tail);
 +		}
- 
--	if (conv_convert(parser->conv, buf2, sizeof(buf2), buf) < 0) {
-+//		if (conv_convert(parser->conv, buf2, sizeof(buf2), buf) < 0) {
- 		index = parser->bufp - parser->buf->str;
- 
--		conv_utf8todisp(buf2, sizeof(buf2), buf);
--		g_string_append(parser->buf, buf2);
-+//			conv_utf8todisp(buf2, sizeof(buf), buf);
-+		g_string_append(parser->buf, buf);
- 
- 		parser->bufp = parser->buf->str + index;
  
 -		return SC_HTML_CONV_FAILED;
 -	}
--
++		index = parser->bufp - parser->buf->str;
+ 
 -	index = parser->bufp - parser->buf->str;
--
++		g_string_append(parser->buf, buf);
+ 
 -	g_string_append(parser->buf, buf2);
--
++		parser->bufp = parser->buf->str + index;
+ 
 -	parser->bufp = parser->buf->str + index;
-+//			g_free(tail);
-+//			return SC_HTML_CONV_FAILED;
-+//		}
-+//		else {
-+//			index = parser->bufp - parser->buf->str;
-+//			conv_utf8todisp(buf2, sizeof(buf), buf);
-+//			g_string_append(parser->buf, buf2);
-+//			parser->bufp = parser->buf->str + index;
-+//		}
-+	    g_warning(":: do end");
 +	} while (tail_size !=0);
-+	g_warning(":: end normal with tailsize=0");
  
  	return SC_HTML_NORMAL;
  }
-diff --git a/src/textview.c b/src/textview.c
-index b986de84e..5c2f0d328 100644
---- a/src/textview.c
-+++ b/src/textview.c
-@@ -1262,6 +1262,10 @@ static void textview_show_html(TextView *textview, FILE *fp,
- 			return;
- 		}
- 	}
-+    g_warning(">> buf->str:%s", parser->buf->str);
-+    g_warning(">> str->str:%s", parser->str->str);
-+    g_warning(">> buf->str:%p", parser->buf->str);
-+    g_warning(">> str->str:%p", parser->str->str);
- 	textview_write_line(textview, "\n", NULL, FALSE);
- 
- 	account_sigsep_matchlist_delete();
