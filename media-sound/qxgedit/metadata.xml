@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+<!-- maintainer-needed -->
+<upstream>
+	<remote-id type="github">rncbc/qxgedit</remote-id>
+	<remote-id type="sourceforge">qxgedit</remote-id>
+</upstream>
+<longdescription>QXGEdit is a Qt framework GUI for editing MIDI System Exclusive files for XG devices (eg. Yamaha DB50XG).
+QXGEdit is free, open-source software, distributed under the terms of the GNU General Public License (GPL) version 2 or later.
+</longdescription>
+</pkgmetadata>
