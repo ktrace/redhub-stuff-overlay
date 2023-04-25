@@ -1,0 +1,33 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 19fd9063..8c46ba55 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -77,7 +77,7 @@ find_package(Qt5Core 5.2 REQUIRED)
+ find_package(Qt5Gui REQUIRED)
+ find_package(Qt5Network REQUIRED)
+ find_package(Qt5Sql REQUIRED)
+-find_package(Qt5WebKitWidgets REQUIRED)
++find_package(Qt5WebEngineWidgets REQUIRED)
+ find_package(Qt5Widgets REQUIRED)
+ find_package(Qt5LinguistTools)
+ find_package(Qt5Svg REQUIRED)
+@@ -708,7 +708,7 @@ if(WITH_DESKTOP)
+     add_executable(trojita WIN32 ${trojita_desktop_SOURCES} ${trojita_QM})
+     set_property(TARGET trojita APPEND PROPERTY COMPILE_DEFINITIONS QT_NO_CAST_FROM_ASCII QT_NO_CAST_TO_ASCII)
+     target_link_libraries(trojita AppVersion Common UiUtils DesktopGui ${STATIC_PLUGINS})
+-    qt5_use_modules(DesktopGui Network WebKitWidgets)
++    qt5_use_modules(DesktopGui Network WebEngineWidgets)
+     qt5_use_modules(trojita Widgets Network)
+ endif()
+ 
+@@ -764,8 +764,8 @@ if(WITH_TESTS)
+     trojita_test(Composer Composer_Submission)
+     trojita_test(Composer Composer_responses)
+     trojita_test(Composer Html_formatting)
+-    qt5_use_modules(test_Composer_responses WebKitWidgets)
+-    qt5_use_modules(test_Html_formatting WebKitWidgets)
++    qt5_use_modules(test_Composer_responses WebEngineWidgets)
++    qt5_use_modules(test_Html_formatting WebEngineWidgets)
+     trojita_test(Imap Imap_DisappearingMailboxes)
+     trojita_test(Imap Imap_Idle)
+     trojita_test(Imap Imap_LowLevelParser)

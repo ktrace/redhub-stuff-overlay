@@ -1,0 +1,895 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 19fd9063..8c46ba55 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -77,7 +77,7 @@ find_package(Qt5Core 5.2 REQUIRED)
+ find_package(Qt5Gui REQUIRED)
+ find_package(Qt5Network REQUIRED)
+ find_package(Qt5Sql REQUIRED)
+-find_package(Qt5WebKitWidgets REQUIRED)
++find_package(Qt5WebEngineWidgets REQUIRED)
+ find_package(Qt5Widgets REQUIRED)
+ find_package(Qt5LinguistTools)
+ find_package(Qt5Svg REQUIRED)
+@@ -708,7 +708,7 @@ if(WITH_DESKTOP)
+     add_executable(trojita WIN32 ${trojita_desktop_SOURCES} ${trojita_QM})
+     set_property(TARGET trojita APPEND PROPERTY COMPILE_DEFINITIONS QT_NO_CAST_FROM_ASCII QT_NO_CAST_TO_ASCII)
+     target_link_libraries(trojita AppVersion Common UiUtils DesktopGui ${STATIC_PLUGINS})
+-    qt5_use_modules(DesktopGui Network WebKitWidgets)
++    qt5_use_modules(DesktopGui Network WebEngineWidgets)
+     qt5_use_modules(trojita Widgets Network)
+ endif()
+ 
+@@ -764,8 +764,8 @@ if(WITH_TESTS)
+     trojita_test(Composer Composer_Submission)
+     trojita_test(Composer Composer_responses)
+     trojita_test(Composer Html_formatting)
+-    qt5_use_modules(test_Composer_responses WebKitWidgets)
+-    qt5_use_modules(test_Html_formatting WebKitWidgets)
++    qt5_use_modules(test_Composer_responses WebEngineWidgets)
++    qt5_use_modules(test_Html_formatting WebEngineWidgets)
+     trojita_test(Imap Imap_DisappearingMailboxes)
+     trojita_test(Imap Imap_Idle)
+     trojita_test(Imap Imap_LowLevelParser)
+diff --git a/docs/thesis/thesis.tex b/docs/thesis/thesis.tex
+index ea584480..7e4c1ae4 100644
+--- a/docs/thesis/thesis.tex
++++ b/docs/thesis/thesis.tex
+@@ -1097,15 +1097,15 @@ The core of both message rendering widgets is based on the WebKit
+ \subsection{Network Manager}
+ \label{network-manager}
+ 
+-The QWebView class is a component providing the HTML rendering engine as well as
++The QWebEngineView class is a component providing the HTML rendering engine as well as
+ certain auxiliary infrastructure such as a client implementation of the HTTP
+ stack.  These parts combined together contain everything required for building an
+ application which displays HTML pages retrieved from the network via a standard
+ protocol like HTTP.  Messages stored on a remote IMAP server are not, however,
+-usually available over HTTP.  Therefore, the QWebView had to be extended in order
++usually available over HTTP.  Therefore, the QWebEngineView had to be extended in order
+ to be usable in \trojita.
+ 
+-Luckily the QWebView provides a straightforward way to delegate the network
++Luckily the QWebEngineView provides a straightforward way to delegate the network
+ processing to a custom component via the QNetworkAccessManager interface.  That
+ custom component is then responsible for handling all network requests that
+ originate as part of the processing of the HTML page.
+@@ -1155,7 +1155,7 @@ of {\em non-trivial} ones are {\tt multipart/mixed} or {\tt message/rfc822}.}
+ content-types, the factory returns an instance of a slightly
+ modified\footnote{The modifications include filtering of the mouse wheel events,
+ because the widget is supposed to be as large as required and leave implementing
+-a scrolling view to itself to an upper layer.} QWebView.
++a scrolling view to itself to an upper layer.} QWebEngineView.
+ 
+ If the type is complex, a wrapping widget is created.  A classic example of the
+ wrapper is the handler of {\tt multipart/alternative} MIME content-type.  In
+diff --git a/src/Gui/ComposerTextEdit.cpp b/src/Gui/ComposerTextEdit.cpp
+index ada0524d..d703c271 100644
+--- a/src/Gui/ComposerTextEdit.cpp
++++ b/src/Gui/ComposerTextEdit.cpp
+@@ -181,7 +181,7 @@ void ComposerTextEdit::contextMenuEvent(QContextMenuEvent *e)
+     // QTextEdit::paste but to a QTextControl/QWidgetTextControl::paste, and these are private classes, which makes it
+     // a tad complicated to find them via QObject::findChildren().
+     //
+-    // The API of QWebView with its standard actions looks like heaven compared to this stuff.
++    // The API of QWebEngineView with its standard actions looks like heaven compared to this stuff.
+     //
+     // This is why we take a look at the action's text and look for a particular string. Yes, it's ugly; patches welcome.
+     QAction *pasteAction = 0;
+diff --git a/src/Gui/EmbeddedWebView.cpp b/src/Gui/EmbeddedWebView.cpp
+index 66350a9c..979eeef1 100644
+--- a/src/Gui/EmbeddedWebView.cpp
++++ b/src/Gui/EmbeddedWebView.cpp
+@@ -63,7 +63,7 @@ namespace Gui
+ {
+ 
+ EmbeddedWebView::EmbeddedWebView(QWidget *parent, QNetworkAccessManager *networkManager)
+-    : QWebView(parent)
++    : QWebEngineView(parent)
+     , m_scrollParent(nullptr)
+     , m_resizeInProgress(0)
+     , m_staticWidth(0)
+@@ -86,9 +86,9 @@ EmbeddedWebView::EmbeddedWebView(QWidget *parent, QNetworkAccessManager *network
+     s->setAttribute(QWebSettings::LocalStorageDatabaseEnabled, false);
+     s->clearMemoryCaches();
+ 
+-    page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+-    connect(this, &QWebView::linkClicked, this, &EmbeddedWebView::slotLinkClicked);
+-    connect(this, &QWebView::loadFinished, this, &EmbeddedWebView::handlePageLoadFinished);
++    page()->setLinkDelegationPolicy(QWebEnginePage::DelegateAllLinks);
++    connect(this, &QWebEngineView::linkClicked, this, &EmbeddedWebView::slotLinkClicked);
++    connect(this, &QWebEngineView::loadFinished, this, &EmbeddedWebView::handlePageLoadFinished);
+     connect(page()->mainFrame(), &QWebFrame::contentsSizeChanged, this, &EmbeddedWebView::handlePageLoadFinished);
+ 
+     // Scrolling is implemented on upper layers
+@@ -96,7 +96,7 @@ EmbeddedWebView::EmbeddedWebView(QWidget *parent, QNetworkAccessManager *network
+     page()->mainFrame()->setScrollBarPolicy(Qt::Vertical, Qt::ScrollBarAlwaysOff);
+ 
+     // Setup shortcuts for standard actions
+-    QAction *copyAction = page()->action(QWebPage::Copy);
++    QAction *copyAction = page()->action(QWebEnginePage::Copy);
+     copyAction->setShortcut(tr("Ctrl+C"));
+     addAction(copyAction);
+ 
+@@ -174,12 +174,12 @@ void EmbeddedWebView::handlePageLoadFinished()
+     Qt::ScrollBarPolicy policy = isWindow() ? Qt::ScrollBarAsNeeded : Qt::ScrollBarAlwaysOff;
+     page()->mainFrame()->setScrollBarPolicy(Qt::Horizontal, policy);
+     page()->mainFrame()->setScrollBarPolicy(Qt::Vertical, policy);
+-    page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
++    page()->setLinkDelegationPolicy(QWebEnginePage::DelegateAllLinks);
+ }
+ 
+ void EmbeddedWebView::changeEvent(QEvent *e)
+ {
+-    QWebView::changeEvent(e);
++    QWebEngineView::changeEvent(e);
+     if (e->type() == QEvent::ParentChange)
+         findScrollParent();
+ }
+@@ -195,7 +195,7 @@ bool EmbeddedWebView::eventFilter(QObject *o, QEvent *e)
+             m_autoScrollTimer->stop();
+         }
+     }
+-    return QWebView::eventFilter(o, e);
++    return QWebEngineView::eventFilter(o, e);
+ }
+ 
+ void EmbeddedWebView::autoScroll()
+@@ -222,7 +222,7 @@ void EmbeddedWebView::mouseMoveEvent(QMouseEvent *e)
+         autoScroll();
+         m_autoScrollTimer->start();
+     }
+-    QWebView::mouseMoveEvent(e);
++    QWebEngineView::mouseMoveEvent(e);
+ }
+ 
+ void EmbeddedWebView::mouseReleaseEvent(QMouseEvent *e)
+@@ -231,7 +231,7 @@ void EmbeddedWebView::mouseReleaseEvent(QMouseEvent *e)
+         m_autoScrollPixels = 0;
+         m_autoScrollTimer->stop();
+     }
+-    QWebView::mouseReleaseEvent(e);
++    QWebEngineView::mouseReleaseEvent(e);
+ }
+ 
+ void EmbeddedWebView::findScrollParent()
+@@ -273,7 +273,7 @@ void EmbeddedWebView::findScrollParent()
+ 
+ void EmbeddedWebView::showEvent(QShowEvent *se)
+ {
+-    QWebView::showEvent(se);
++    QWebEngineView::showEvent(se);
+     Qt::ScrollBarPolicy policy = isWindow() ? Qt::ScrollBarAsNeeded : Qt::ScrollBarAlwaysOff;
+     page()->mainFrame()->setScrollBarPolicy(Qt::Horizontal, Qt::ScrollBarAsNeeded);
+     page()->mainFrame()->setScrollBarPolicy(Qt::Vertical, policy);
+@@ -285,7 +285,7 @@ void EmbeddedWebView::showEvent(QShowEvent *se)
+ 
+ QSize EmbeddedWebView::sizeHint() const
+ {
+-    return QSize(32,32); // QWebView returns 800x600 what will lead to too wide pages for our implementation
++    return QSize(32,32); // QWebEngineView returns 800x600 what will lead to too wide pages for our implementation
+ }
+ 
+ QWidget *EmbeddedWebView::scrollParent() const
+@@ -303,7 +303,7 @@ int EmbeddedWebView::staticWidth() const
+     return m_staticWidth;
+ }
+ 
+-ErrorCheckingPage::ErrorCheckingPage(QObject *parent): QWebPage(parent)
++ErrorCheckingPage::ErrorCheckingPage(QObject *parent): QWebEnginePage(parent)
+ {
+ }
+ 
+diff --git a/src/Gui/EmbeddedWebView.h b/src/Gui/EmbeddedWebView.h
+index 9ac83d15..e20490fc 100644
+--- a/src/Gui/EmbeddedWebView.h
++++ b/src/Gui/EmbeddedWebView.h
+@@ -22,19 +22,19 @@
+ #ifndef EMBEDDEDWEBVIEW_H
+ #define EMBEDDEDWEBVIEW_H
+ 
+-#include <QWebPluginFactory>
+-#include <QWebView>
++// #include <QWebPluginFactory>
++#include <QWebEngineView>
+ 
+ namespace Gui
+ {
+ 
+ 
+-/** @short An embeddable QWebView with some safety checks and modified resizing
++/** @short An embeddable QWebEngineView with some safety checks and modified resizing
+ 
+-  This class configures the QWebView in such a way that it will prevent certain
++  This class configures the QWebEngineView in such a way that it will prevent certain
+   dangerous (or unexpected, in the context of a MUA) features from being invoked.
+ 
+-  Another function is to configure the QWebView in such a way that it resizes
++  Another function is to configure the QWebEngineView in such a way that it resizes
+   itself to show all required contents.
+ 
+   Note that you still have to provide a proper eventFilter in the parent widget
+@@ -43,7 +43,7 @@ namespace Gui
+   @see Gui::MessageView
+ 
+   */
+-class EmbeddedWebView: public QWebView
++class EmbeddedWebView: public QWebEngineView
+ {
+     Q_OBJECT
+ public:
+@@ -91,7 +91,7 @@ protected:
+     ColorScheme m_colorScheme;
+ };
+ 
+-class ErrorCheckingPage: public QWebPage
++class ErrorCheckingPage: public QWebEnginePage
+ {
+     Q_OBJECT
+ public:
+diff --git a/src/Gui/FindBar.cpp b/src/Gui/FindBar.cpp
+index a7c65d3f..6005d07e 100644
+--- a/src/Gui/FindBar.cpp
++++ b/src/Gui/FindBar.cpp
+@@ -35,7 +35,7 @@
+ #include <QScrollBar>
+ #include <QToolButton>
+ #include <QWebFrame>
+-#include <QWebView>
++#include <QWebEngineView>
+ #include "LineEdit.h"
+ #include "Gui/EmbeddedWebView.h"
+ #include "UiUtils/Color.h"
+@@ -209,14 +209,14 @@ void FindBar::find(FindBar::FindDirection dir)
+         return;
+     }
+ 
+-    QWebPage::FindFlags options = QWebPage::FindWrapsAroundDocument;
++    QWebEnginePage::FindFlags options = QWebEnginePage::FindWrapsAroundDocument;
+     if (dir == Backward)
+-        options |= QWebPage::FindBackward;
++        options |= QWebEnginePage::FindBackward;
+     if (matchCase())
+-        options |= QWebPage::FindCaseSensitively;
++        options |= QWebEnginePage::FindCaseSensitively;
+ 
+-    // HACK Because we're using the QWebView inside a QScrollArea container, the attempts
+-    // to scroll the QWebView itself have no direct effect.
++    // HACK Because we're using the QWebEngineView inside a QScrollArea container, the attempts
++    // to scroll the QWebEngineView itself have no direct effect.
+     // Therefore we temporarily shrink the page viewport to the message viewport (ie. the size it
+     // can cover at max), then perform the search, store the scrollPosition, restore the page viewport
+     // and finally scroll the messageview to the gathered scrollPosition, mapped to the message (ie.
+@@ -282,7 +282,7 @@ void FindBar::matchCaseUpdate()
+ {
+     Q_ASSERT(m_associatedWebView);
+ 
+-    m_associatedWebView->page()->findText(_lastStringSearched, QWebPage::FindBackward);
++    m_associatedWebView->page()->findText(_lastStringSearched, QWebEnginePage::FindBackward);
+     findNext();
+     updateHighlight();
+ }
+@@ -292,19 +292,19 @@ void FindBar::updateHighlight()
+ {
+     Q_ASSERT(m_associatedWebView);
+ 
+-    QWebPage::FindFlags options = QWebPage::HighlightAllOccurrences;
++    QWebEnginePage::FindFlags options = QWebEnginePage::HighlightAllOccurrences;
+ 
+     m_associatedWebView->page()->findText(QString(), options); //Clear an existing highlight
+ 
+     if (!isHidden() && highlightAllState())
+     {
+         if (matchCase())
+-            options |= QWebPage::FindCaseSensitively;
++            options |= QWebEnginePage::FindCaseSensitively;
+         m_associatedWebView->page()->findText(_lastStringSearched, options);
+     }
+ }
+ 
+-void FindBar::setAssociatedWebView(QWebView *webView)
++void FindBar::setAssociatedWebView(QWebEngineView *webView)
+ {
+     if (m_associatedWebView)
+         disconnect(m_associatedWebView, nullptr, this, nullptr);
+diff --git a/src/Gui/FindBar.h b/src/Gui/FindBar.h
+index e138c8a7..cdc626c0 100644
+--- a/src/Gui/FindBar.h
++++ b/src/Gui/FindBar.h
+@@ -34,7 +34,7 @@
+ class QCheckBox;
+ class QLineEdit;
+ class QString;
+-class QWebView;
++class QWebEngineView;
+ 
+ namespace Gui {
+ 
+@@ -51,7 +51,7 @@ public:
+     bool highlightAllState() const;
+ 
+     void setVisible(bool visible);
+-    void setAssociatedWebView(QWebView *webView);
++    void setAssociatedWebView(QWebEngineView *webView);
+ 
+ protected:
+     void keyPressEvent(QKeyEvent *event);
+@@ -76,7 +76,7 @@ private:
+     QCheckBox *m_highlightAll;
+ 
+     QString _lastStringSearched;
+-    QPointer<QWebView> m_associatedWebView;
++    QPointer<QWebEngineView> m_associatedWebView;
+ };
+ 
+ }
+diff --git a/src/Gui/FindBarMixin.cpp b/src/Gui/FindBarMixin.cpp
+index 136c2b24..fe5b99ee 100644
+--- a/src/Gui/FindBarMixin.cpp
++++ b/src/Gui/FindBarMixin.cpp
+@@ -30,7 +30,7 @@ FindBarMixin::FindBarMixin(QWidget *parent)
+ {
+ }
+ 
+-void FindBarMixin::searchRequestedBy(QWebView *webView)
++void FindBarMixin::searchRequestedBy(QWebEngineView *webView)
+ {
+     if (m_findBar->isVisible() || !webView) {
+         // NOTICE: hide must go before resetting the AssociatedWebView
+diff --git a/src/Gui/FindBarMixin.h b/src/Gui/FindBarMixin.h
+index 87556397..67b62254 100644
+--- a/src/Gui/FindBarMixin.h
++++ b/src/Gui/FindBarMixin.h
+@@ -24,20 +24,20 @@
+ 
+ #include <QWidget>
+ 
+-class QWebView;
++class QWebEngineView;
+ 
+ namespace Gui {
+ 
+ class FindBar;
+ 
+-/** @short Common infrastructure for adding a FindBar to some widget which uses one/many QWebView instances */
++/** @short Common infrastructure for adding a FindBar to some widget which uses one/many QWebEngineView instances */
+ class FindBarMixin
+ {
+ public:
+     FindBarMixin(QWidget *parent);
+ 
+ protected:
+-    void searchRequestedBy(QWebView *webView);
++    void searchRequestedBy(QWebEngineView *webView);
+ 
+     FindBar *m_findBar;
+ };
+diff --git a/src/Gui/MessageHeadersWidget.cpp b/src/Gui/MessageHeadersWidget.cpp
+index ddb0e411..dc4e43d4 100644
+--- a/src/Gui/MessageHeadersWidget.cpp
++++ b/src/Gui/MessageHeadersWidget.cpp
+@@ -24,7 +24,7 @@
+ #include <QAction>
+ #include <QModelIndex>
+ #include <QVBoxLayout>
+-#include <QWebView>
++#include <QWebEngineView>
+ #include "Gui/FindBar.h"
+ #include "Imap/Model/ItemRoles.h"
+ #include "Imap/Model/MailboxTree.h"
+@@ -36,7 +36,7 @@ namespace Gui {
+ MessageHeadersWidget::MessageHeadersWidget(QWidget *parent, const QModelIndex &messageIndex)
+     : QWidget(parent)
+     , FindBarMixin(this)
+-    , m_widget(new QWebView(this))
++    , m_widget(new QWebEngineView(this))
+ 
+ {
+     setWindowIcon(UiUtils::loadIcon(QStringLiteral("text-x-hex")));
+diff --git a/src/Gui/MessageHeadersWidget.h b/src/Gui/MessageHeadersWidget.h
+index aef37d69..55d58250 100644
+--- a/src/Gui/MessageHeadersWidget.h
++++ b/src/Gui/MessageHeadersWidget.h
+@@ -27,7 +27,7 @@
+ #include "Gui/FindBarMixin.h"
+ 
+ class QModelIndex;
+-class QWebView;
++class QWebEngineView;
+ 
+ namespace Gui {
+ 
+@@ -40,7 +40,7 @@ public:
+     MessageHeadersWidget(QWidget *parent, const QModelIndex& messageIndex);
+ 
+ private:
+-    QWebView *m_widget;
++    QWebEngineView *m_widget;
+ };
+ 
+ }
+diff --git a/src/Gui/MessageSourceWidget.cpp b/src/Gui/MessageSourceWidget.cpp
+index 23295e84..ec2ecdc0 100644
+--- a/src/Gui/MessageSourceWidget.cpp
++++ b/src/Gui/MessageSourceWidget.cpp
+@@ -25,7 +25,7 @@
+ #include <QAction>
+ #include <QModelIndex>
+ #include <QVBoxLayout>
+-#include <QWebView>
++#include <QWebEngineView>
+ #include "Gui/FindBar.h"
+ #include "Gui/Spinner.h"
+ #include "Imap/Model/FullMessageCombiner.h"
+@@ -39,7 +39,7 @@ MessageSourceWidget::MessageSourceWidget(QWidget *parent, const QModelIndex &mes
+     , FindBarMixin(this)
+     , m_combiner(nullptr)
+     , m_loadingSpinner(nullptr)
+-    , m_widget(new QWebView(this))
++    , m_widget(new QWebEngineView(this))
+ {
+     setWindowIcon(UiUtils::loadIcon(QStringLiteral("text-x-hex")));
+     Q_ASSERT(messageIndex.isValid());
+diff --git a/src/Gui/MessageSourceWidget.h b/src/Gui/MessageSourceWidget.h
+index b1639c49..4b4f1360 100644
+--- a/src/Gui/MessageSourceWidget.h
++++ b/src/Gui/MessageSourceWidget.h
+@@ -28,7 +28,7 @@
+ #include "Gui/FindBarMixin.h"
+ 
+ class QModelIndex;
+-class QWebView;
++class QWebEngineView;
+ 
+ namespace Imap
+ {
+@@ -56,7 +56,7 @@ private slots:
+ private:
+     Imap::Mailbox::FullMessageCombiner *m_combiner;
+     Spinner *m_loadingSpinner;
+-    QWebView *m_widget;
++    QWebEngineView *m_widget;
+ };
+ 
+ }
+diff --git a/src/Gui/MessageView.cpp b/src/Gui/MessageView.cpp
+index d9929403..1ceb2000 100644
+--- a/src/Gui/MessageView.cpp
++++ b/src/Gui/MessageView.cpp
+@@ -139,7 +139,7 @@ MessageView::~MessageView()
+     // Redmine #496 -- the default order of destruction starts with our QNAM subclass which in turn takes care of all pending
+     // QNetworkReply instances created by that manager. When the destruction goes to the WebKit objects, they try to disconnect
+     // from the network replies which are however gone already. We can mitigate that by simply making sure that the destruction
+-    // starts with the QWebView subclasses and only after that proceeds to the QNAM. Qt's default order leads to segfaults here.
++    // starts with the QWebEngineView subclasses and only after that proceeds to the QNAM. Qt's default order leads to segfaults here.
+     unsetPreviousMessage();
+ }
+ 
+@@ -490,7 +490,7 @@ QModelIndex MessageView::currentMessage() const
+ 
+ void MessageView::onWebViewLoadStarted()
+ {
+-    QWebView *wv = qobject_cast<QWebView*>(sender());
++    QWebEngineView *wv = qobject_cast<QWebEngineView*>(sender());
+     Q_ASSERT(wv);
+ 
+     if (m_netWatcher && m_netWatcher->effectiveNetworkPolicy() != Imap::Mailbox::NETWORK_OFFLINE) {
+@@ -501,7 +501,7 @@ void MessageView::onWebViewLoadStarted()
+ 
+ void MessageView::onWebViewLoadFinished()
+ {
+-    QWebView *wv = qobject_cast<QWebView*>(sender());
++    QWebEngineView *wv = qobject_cast<QWebEngineView*>(sender());
+     Q_ASSERT(wv);
+     m_loadingItems.remove(wv);
+     if (m_loadingItems.isEmpty())
+diff --git a/src/Gui/MessageView.h b/src/Gui/MessageView.h
+index 2cc20282..4329387c 100644
+--- a/src/Gui/MessageView.h
++++ b/src/Gui/MessageView.h
+@@ -37,7 +37,7 @@ class QSettings;
+ class QStackedLayout;
+ class QTimer;
+ class QUrl;
+-class QWebView;
++class QWebEngineView;
+ 
+ namespace Cryptography {
+ class MessageModel;
+@@ -124,7 +124,7 @@ private:
+     void clearWaitingConns();
+ 
+     QStackedLayout *m_stack;
+-    QWebView *m_homePage;
++    QWebEngineView *m_homePage;
+ 
+     QWidget *m_messageWidget;
+     QBoxLayout *m_msgLayout;
+@@ -143,7 +143,7 @@ private:
+     Spinner *m_loadingSpinner;
+     QSettings *m_settings;
+     Plugins::PluginManager *m_pluginManager;
+-    QSet<QWebView*> m_loadingItems;
++    QSet<QWebEngineView*> m_loadingItems;
+ 
+     std::vector<QMetaObject::Connection> m_waitingMessageConns;
+ 
+diff --git a/src/Gui/SimplePartWidget.cpp b/src/Gui/SimplePartWidget.cpp
+index e9f85921..3517260f 100644
+--- a/src/Gui/SimplePartWidget.cpp
++++ b/src/Gui/SimplePartWidget.cpp
+@@ -51,8 +51,8 @@ SimplePartWidget::SimplePartWidget(QWidget *parent, Imap::Network::MsgPartNetAcc
+     Q_ASSERT(partIndex.isValid());
+ 
+     if (m_messageView) {
+-        connect(this, &QWebView::loadStarted, m_messageView, &MessageView::onWebViewLoadStarted);
+-        connect(this, &QWebView::loadFinished, m_messageView, &MessageView::onWebViewLoadFinished);
++        connect(this, &QWebEngineView::loadStarted, m_messageView, &MessageView::onWebViewLoadStarted);
++        connect(this, &QWebEngineView::loadFinished, m_messageView, &MessageView::onWebViewLoadFinished);
+     }
+ 
+     QUrl url;
+@@ -61,7 +61,7 @@ SimplePartWidget::SimplePartWidget(QWidget *parent, Imap::Network::MsgPartNetAcc
+     url.setPath(partIndex.data(Imap::Mailbox::RolePartPathToPart).toString());
+     if (partIndex.data(Imap::Mailbox::RolePartMimeType).toString() == QLatin1String("text/plain")) {
+         if (partIndex.data(Imap::Mailbox::RolePartOctets).toULongLong() < 100 * 1024) {
+-            connect(this, &QWebView::loadFinished, this, &SimplePartWidget::slotMarkupPlainText);
++            connect(this, &QWebEngineView::loadFinished, this, &SimplePartWidget::slotMarkupPlainText);
+         } else {
+             QFont font(QFontDatabase::systemFont(QFontDatabase::FixedFont));
+             setStaticWidth(QFontMetrics(font).maxWidth()*90);
+@@ -92,11 +92,11 @@ SimplePartWidget::SimplePartWidget(QWidget *parent, Imap::Network::MsgPartNetAcc
+     if (m_messageView) {
+         connect(this, &QWidget::customContextMenuRequested, m_messageView, &MessageView::partContextMenuRequested);
+         connect(this, &SimplePartWidget::searchDialogRequested, m_messageView, &MessageView::triggerSearchDialog);
+-        // The targets expect the sender() of the signal to be a SimplePartWidget, not a QWebPage,
++        // The targets expect the sender() of the signal to be a SimplePartWidget, not a QWebEnginePage,
+         // which means we have to do this indirection
+-        connect(page(), &QWebPage::linkHovered, this, &SimplePartWidget::linkHovered);
++        connect(page(), &QWebEnginePage::linkHovered, this, &SimplePartWidget::linkHovered);
+         connect(this, &SimplePartWidget::linkHovered, m_messageView, &MessageView::partLinkHovered);
+-        connect(page(), &QWebPage::downloadRequested, this, &SimplePartWidget::slotDownloadImage);
++        connect(page(), &QWebEnginePage::downloadRequested, this, &SimplePartWidget::slotDownloadImage);
+ 
+         installEventFilter(m_messageView);
+     }
+@@ -105,7 +105,7 @@ SimplePartWidget::SimplePartWidget(QWidget *parent, Imap::Network::MsgPartNetAcc
+ void SimplePartWidget::slotMarkupPlainText()
+ {
+     // NOTICE "single shot", we get a recursion otherwise!
+-    disconnect(this, &QWebView::loadFinished, this, &SimplePartWidget::slotMarkupPlainText);
++    disconnect(this, &QWebEngineView::loadFinished, this, &SimplePartWidget::slotMarkupPlainText);
+ 
+     // If there's no data, don't try to "fix it up"
+     if (!m_partIndex.isValid() || !m_partIndex.data(Imap::Mailbox::RoleIsFetched).toBool())
+@@ -164,15 +164,15 @@ void SimplePartWidget::zoomOriginal()
+ void SimplePartWidget::buildContextMenu(const QPoint &point, QMenu &menu) const
+ {
+     menu.addAction(m_findAction);
+-    auto a = pageAction(QWebPage::Copy);
++    auto a = pageAction(QWebEnginePage::Copy);
+     a->setIcon(UiUtils::loadIcon(QStringLiteral("edit-copy")));
+     menu.addAction(a);
+-    a = pageAction(QWebPage::SelectAll);
++    a = pageAction(QWebEnginePage::SelectAll);
+     a->setIcon(UiUtils::loadIcon(QStringLiteral("edit-select-all")));
+     menu.addAction(a);
+     if (!page()->mainFrame()->hitTestContent(point).linkUrl().isEmpty()) {
+         menu.addSeparator();
+-        a = pageAction(QWebPage::CopyLinkToClipboard);
++        a = pageAction(QWebEnginePage::CopyLinkToClipboard);
+         a->setIcon(UiUtils::loadIcon(QStringLiteral("edit-copy")));
+         menu.addAction(a);
+     }
+@@ -180,7 +180,7 @@ void SimplePartWidget::buildContextMenu(const QPoint &point, QMenu &menu) const
+     menu.addAction(m_savePart);
+     menu.addAction(m_saveMessage);
+     if (!page()->mainFrame()->hitTestContent(point).imageUrl().isEmpty()) {
+-        a = pageAction(QWebPage::DownloadImageToDisk);
++        a = pageAction(QWebEnginePage::DownloadImageToDisk);
+         a->setIcon(UiUtils::loadIcon(QStringLiteral("download")));
+         menu.addAction(a);
+     }
+diff --git a/src/Gui/UserAgentWebPage.cpp b/src/Gui/UserAgentWebPage.cpp
+index 38a361a2..67655a7c 100644
+--- a/src/Gui/UserAgentWebPage.cpp
++++ b/src/Gui/UserAgentWebPage.cpp
+@@ -26,7 +26,7 @@
+ namespace Gui
+ {
+ 
+-UserAgentWebPage::UserAgentWebPage(QWidget *parent): QWebPage(parent)
++UserAgentWebPage::UserAgentWebPage(QWidget *parent): QWebEnginePage(parent)
+ {
+ }
+ 
+diff --git a/src/Gui/UserAgentWebPage.h b/src/Gui/UserAgentWebPage.h
+index 169f02b7..95243873 100644
+--- a/src/Gui/UserAgentWebPage.h
++++ b/src/Gui/UserAgentWebPage.h
+@@ -22,14 +22,14 @@
+ #ifndef GUI_USERAGENT_WEBPAGE_H
+ #define GUI_USERAGENT_WEBPAGE_H
+ 
+-#include <QWebPage>
++#include <QWebEnginePage>
+ 
+ namespace Gui
+ {
+ 
+ 
+-/** @short QWebPage which sends proper User-Agent headers */
+-class UserAgentWebPage: public QWebPage
++/** @short QWebEnginePage which sends proper User-Agent headers */
++class UserAgentWebPage: public QWebEnginePage
+ {
+     Q_OBJECT
+ public:
+diff --git a/src/Imap/Network/MsgPartNetAccessManager.cpp b/src/Imap/Network/MsgPartNetAccessManager.cpp
+index 645ac1c1..20358401 100644
+--- a/src/Imap/Network/MsgPartNetAccessManager.cpp
++++ b/src/Imap/Network/MsgPartNetAccessManager.cpp
+@@ -44,7 +44,7 @@ MsgPartNetAccessManager::MsgPartNetAccessManager(QObject *parent):
+     // (http://msdn.microsoft.com/en-us/library/ms775147(VS.85).aspx#_replace). As of May 2011, it is not listed in
+     // the official list of assigned MIME types (http://www.iana.org/assignments/media-types/image/index.html), but generated
+     // by MSIE nonetheless. Users of e-mail can see it for example in messages produced by webmails which do not check the
+-    // client-provided MIME types. QWebView would (arguably correctly) refuse to display such a blob, but the damned users
++    // client-provided MIME types. QWebEngineView would (arguably correctly) refuse to display such a blob, but the damned users
+     // typically want to see their images (I certainly do), even though they are not standards-compliant. Hence we fix the
+     // header here.
+     registerMimeTypeTranslation(QStringLiteral("image/pjpeg"), QStringLiteral("image/jpeg"));
+@@ -180,8 +180,8 @@ void MsgPartNetAccessManager::setExternalsEnabled(bool enabled)
+ 
+ /** @short Look for registered translations of MIME types
+ 
+-Certain renderers (the QWebView, most notably) are rather picky about the content they can render.
+-For example, a C++ header file's MIME type inherits from text/plain, but QWebView would still treat
++Certain renderers (the QWebEngineView, most notably) are rather picky about the content they can render.
++For example, a C++ header file's MIME type inherits from text/plain, but QWebEngineView would still treat
+ it as a file to download. The image/pjpeg "type" is another example.
+ 
+ This MIME type translation apparently has to happen at the QNetworkReply layer, so it makes sense to
+diff --git a/src/QmlSupport/QNAMWebView/qdeclarativewebview.cpp b/src/QmlSupport/QNAMWebView/qdeclarativewebview.cpp
+index 57ef7201..d0196823 100644
+--- a/src/QmlSupport/QNAMWebView/qdeclarativewebview.cpp
++++ b/src/QmlSupport/QNAMWebView/qdeclarativewebview.cpp
+@@ -273,7 +273,7 @@ void TrojitaQNAMDeclarativeWebView::init()
+ 
+     d->view = new TrojitaQNAMGraphicsWebView(this);
+     d->view->setResizesToContents(true);
+-    QWebPage* wp = new TrojitaQNAMDeclarativeWebPage(this);
++    QWebEnginePage* wp = new TrojitaQNAMDeclarativeWebPage(this);
+     setPage(wp);
+     connect(d->view, SIGNAL(geometryChanged()), this, SLOT(updateDeclarativeWebViewSize()));
+     connect(d->view, SIGNAL(doubleClick(int, int)), this, SIGNAL(doubleClick(int, int)));
+@@ -480,7 +480,7 @@ void TrojitaQNAMDeclarativeWebView::updateContentsSize()
+ 
+ void TrojitaQNAMDeclarativeWebView::geometryChanged(const QRectF& newGeometry, const QRectF& oldGeometry)
+ {
+-    QWebPage* webPage = page();
++    QWebEnginePage* webPage = page();
+     if (newGeometry.size() != oldGeometry.size() && webPage) {
+         QSize contentSize = webPage->preferredContentsSize();
+         if (widthValid())
+@@ -636,7 +636,7 @@ void TrojitaQNAMDeclarativeWebView::setPressGrabTime(int millis)
+ */
+ QAction* TrojitaQNAMDeclarativeWebView::backAction() const
+ {
+-    return page()->action(QWebPage::Back);
++    return page()->action(QWebEnginePage::Back);
+ }
+ 
+ /*!
+@@ -645,7 +645,7 @@ QAction* TrojitaQNAMDeclarativeWebView::backAction() const
+ */
+ QAction* TrojitaQNAMDeclarativeWebView::forwardAction() const
+ {
+-    return page()->action(QWebPage::Forward);
++    return page()->action(QWebEnginePage::Forward);
+ }
+ 
+ /*!
+@@ -654,7 +654,7 @@ QAction* TrojitaQNAMDeclarativeWebView::forwardAction() const
+ */
+ QAction* TrojitaQNAMDeclarativeWebView::reloadAction() const
+ {
+-    return page()->action(QWebPage::Reload);
++    return page()->action(QWebEnginePage::Reload);
+ }
+ 
+ /*!
+@@ -663,7 +663,7 @@ QAction* TrojitaQNAMDeclarativeWebView::reloadAction() const
+ */
+ QAction* TrojitaQNAMDeclarativeWebView::stopAction() const
+ {
+-    return page()->action(QWebPage::Stop);
++    return page()->action(QWebEnginePage::Stop);
+ }
+ #endif // QT_NO_ACTION
+ 
+@@ -709,7 +709,7 @@ QString TrojitaQNAMDeclarativeWebView::statusText() const
+     return d->statusText;
+ }
+ 
+-QWebPage* TrojitaQNAMDeclarativeWebView::page() const
++QWebEnginePage* TrojitaQNAMDeclarativeWebView::page() const
+ {
+     return d->view->page();
+ }
+@@ -762,7 +762,7 @@ TrojitaDeclarativeWebSettings* TrojitaQNAMDeclarativeWebView::settingsObject() c
+     return &d->settings;
+ }
+ 
+-void TrojitaQNAMDeclarativeWebView::setPage(QWebPage* page)
++void TrojitaQNAMDeclarativeWebView::setPage(QWebEnginePage* page)
+ {
+     if (d->view->page() == page)
+         return;
+@@ -873,10 +873,10 @@ QWebSettings* TrojitaQNAMDeclarativeWebView::settings() const
+     return page()->settings();
+ }
+ 
+-TrojitaQNAMDeclarativeWebView* TrojitaQNAMDeclarativeWebView::createWindow(QWebPage::WebWindowType type)
++TrojitaQNAMDeclarativeWebView* TrojitaQNAMDeclarativeWebView::createWindow(QWebEnginePage::WebWindowType type)
+ {
+     switch (type) {
+-    case QWebPage::WebBrowserWindow: {
++    case QWebEnginePage::WebBrowserWindow: {
+         if (!d->newWindowComponent && d->newWindowParent)
+             qWarning("WebView::newWindowComponent not set - WebView::newWindowParent ignored");
+         else if (d->newWindowComponent && !d->newWindowParent)
+@@ -907,7 +907,7 @@ TrojitaQNAMDeclarativeWebView* TrojitaQNAMDeclarativeWebView::createWindow(QWebP
+         }
+     }
+     break;
+-    case QWebPage::WebModalDialog: {
++    case QWebEnginePage::WebModalDialog: {
+         // Not supported
+     }
+     }
+@@ -1021,12 +1021,12 @@ void TrojitaQNAMDeclarativeWebView::setNetworkAccessManager(QNetworkAccessManage
+ /*!
+     \internal
+     \class TrojitaQNAMDeclarativeWebPage
+-    \brief The TrojitaQNAMDeclarativeWebPage class is a QWebPage that can create QML plugins.
++    \brief The TrojitaQNAMDeclarativeWebPage class is a QWebEnginePage that can create QML plugins.
+ 
+     \sa QDeclarativeWebView
+ */
+ TrojitaQNAMDeclarativeWebPage::TrojitaQNAMDeclarativeWebPage(TrojitaQNAMDeclarativeWebView* parent) :
+-    QWebPage(parent)
++    QWebEnginePage(parent)
+ {
+ }
+ 
+@@ -1080,7 +1080,7 @@ TrojitaQNAMDeclarativeWebView* TrojitaQNAMDeclarativeWebPage::viewItem()
+     return static_cast<TrojitaQNAMDeclarativeWebView*>(parent());
+ }
+ 
+-QWebPage* TrojitaQNAMDeclarativeWebPage::createWindow(WebWindowType type)
++QWebEnginePage* TrojitaQNAMDeclarativeWebPage::createWindow(WebWindowType type)
+ {
+     TrojitaQNAMDeclarativeWebView* newView = viewItem()->createWindow(type);
+     if (newView)
+diff --git a/src/QmlSupport/QNAMWebView/qdeclarativewebview_p.h b/src/QmlSupport/QNAMWebView/qdeclarativewebview_p.h
+index 5ee09498..5288dff7 100644
+--- a/src/QmlSupport/QNAMWebView/qdeclarativewebview_p.h
++++ b/src/QmlSupport/QNAMWebView/qdeclarativewebview_p.h
+@@ -41,13 +41,13 @@ class QNetworkRequest;
+ class TrojitaQNAMDeclarativeWebView;
+ class TrojitaQNAMDeclarativeWebViewPrivate;
+ 
+-class TrojitaQNAMDeclarativeWebPage : public QWebPage {
++class TrojitaQNAMDeclarativeWebPage : public QWebEnginePage {
+     Q_OBJECT
+ public:
+     explicit TrojitaQNAMDeclarativeWebPage(TrojitaQNAMDeclarativeWebView *parent);
+     ~TrojitaQNAMDeclarativeWebPage();
+ protected:
+-    QWebPage *createWindow(WebWindowType type);
++    QWebEnginePage *createWindow(WebWindowType type);
+     QString chooseFile(QWebFrame *originatingFrame, const QString& oldFile);
+     void javaScriptAlert(QWebFrame *originatingFrame, const QString& msg);
+     bool javaScriptConfirm(QWebFrame *originatingFrame, const QString& msg);
+@@ -157,8 +157,8 @@ public:
+     QAction *stopAction() const;
+ #endif
+ 
+-    QWebPage *page() const;
+-    void setPage(QWebPage *page);
++    QWebEnginePage *page() const;
++    void setPage(QWebEnginePage *page);
+ 
+     void load(const QNetworkRequest &request,
+               QNetworkAccessManager::Operation operation = QNetworkAccessManager::GetOperation,
+@@ -238,7 +238,7 @@ private Q_SLOTS:
+ 
+     virtual void geometryChanged(const QRectF &newGeometry,
+                                  const QRectF &oldGeometry);
+-    TrojitaQNAMDeclarativeWebView* createWindow(QWebPage::WebWindowType type);
++    TrojitaQNAMDeclarativeWebView* createWindow(QWebEnginePage::WebWindowType type);
+ 
+ private:
+     void updateContentsSize();
+diff --git a/tests/Composer/test_Composer_responses.cpp b/tests/Composer/test_Composer_responses.cpp
+index cf771d16..e4e076fc 100644
+--- a/tests/Composer/test_Composer_responses.cpp
++++ b/tests/Composer/test_Composer_responses.cpp
+@@ -24,7 +24,7 @@
+ #include <QAction>
+ #include <QTextDocument>
+ #include <QWebFrame>
+-#include <QWebView>
++#include <QWebEngineView>
+ #include "test_Composer_responses.h"
+ #include "Composer/Mailto.h"
+ #include "Composer/QuoteText.h"
+diff --git a/tests/Composer/test_Composer_responses.h b/tests/Composer/test_Composer_responses.h
+index 68fc0917..4df23fc8 100644
+--- a/tests/Composer/test_Composer_responses.h
++++ b/tests/Composer/test_Composer_responses.h
+@@ -26,7 +26,7 @@
+ #include <QTest>
+ #include "UiUtils/PlainTextFormatter.h"
+ 
+-class QWebView;
++class QWebEngineView;
+ 
+ /** @short Test sanity of data produced when responding to e-mail */
+ class ComposerResponsesTest : public QObject
+diff --git a/tests/Composer/test_Html_formatting.cpp b/tests/Composer/test_Html_formatting.cpp
+index 4653a26a..cd6624a8 100644
+--- a/tests/Composer/test_Html_formatting.cpp
++++ b/tests/Composer/test_Html_formatting.cpp
+@@ -24,7 +24,7 @@
+ #include <QAction>
+ #include <QTextDocument>
+ #include <QWebFrame>
+-#include <QWebView>
++#include <QWebEngineView>
+ #include "test_Html_formatting.h"
+ #include "Composer/Recipients.h"
+ #include "Composer/ReplaceSignature.h"
+@@ -227,9 +227,9 @@ void HtmlFormattingTest::testPlainTextFormattingViaHtml_data()
+ 
+ WebRenderingTester::WebRenderingTester()
+ {
+-    m_web = new QWebView(0);
++    m_web = new QWebEngineView(0);
+     m_loop = new QEventLoop(this);
+-    connect(m_web, &QWebView::loadFinished, m_loop, &QEventLoop::quit);
++    connect(m_web, &QWebEngineView::loadFinished, m_loop, &QEventLoop::quit);
+ }
+ 
+ WebRenderingTester::~WebRenderingTester()
+@@ -265,7 +265,7 @@ QString WebRenderingTester::asPlainText(const QString &input, const UiUtils::Flo
+         sourceData = sourceData.replace(QStringLiteral(" checked=\"checked\""), QString());
+     QTimer::singleShot(0, this, SLOT(doDelayedLoad()));
+     m_loop->exec();
+-    m_web->page()->action(QWebPage::SelectAll)->trigger();
++    m_web->page()->action(QWebEnginePage::SelectAll)->trigger();
+     return m_web->page()->selectedText();
+ }
+ 
+diff --git a/tests/Composer/test_Html_formatting.h b/tests/Composer/test_Html_formatting.h
+index 77b6f21f..f7c3e8bb 100644
+--- a/tests/Composer/test_Html_formatting.h
++++ b/tests/Composer/test_Html_formatting.h
+@@ -26,7 +26,7 @@
+ #include <QTest>
+ #include "UiUtils/PlainTextFormatter.h"
+ 
+-class QWebView;
++class QWebEngineView;
+ 
+ /** @short Tests for HTML prettification of plaintext content */
+ class HtmlFormattingTest : public QObject
+@@ -72,7 +72,7 @@ public:
+ public slots:
+     void doDelayedLoad();
+ private:
+-    QWebView *m_web;
++    QWebEngineView *m_web;
+     QEventLoop *m_loop;
+     QString sourceData;
+ };
