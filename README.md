@@ -8,6 +8,7 @@ ADDED:
 - Weblate client (CLI)
 - zrtp for twinkle
 - fheroes2 game engine
+- Regina-REXX add dropped and up version
 
 TODO:
 - Weblate server
