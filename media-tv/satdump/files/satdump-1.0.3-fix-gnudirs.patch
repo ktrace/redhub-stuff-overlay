@@ -1,0 +1,19 @@
+diff --git a/src-core/CMakeLists.txt b/src-core/CMakeLists.txt
+index 9c8ecb5a..fc68f6e3
+--- a/src-core/CMakeLists.txt
++++ b/src-core/CMakeLists.txt
+@@ -4,6 +4,7 @@
+ include(CheckCSourceCompiles)
+ include(CMakePushCheckState)
+ include(CheckCCompilerFlag)
++include(GNUInstallDirs)
+ 
+ file(GLOB_RECURSE SatDump_core_CPPS *.cpp
+     libs/aec/*.c
+@@ -194,6 +195,6 @@
+     endif()
+ endif()
+ 
+-install(TARGETS satdump_core DESTINATION lib)
++install(TARGETS satdump_core DESTINATION ${LIBDIR})
+ install(DIRECTORY . DESTINATION include/satdump FILES_MATCHING PATTERN "*.h")
