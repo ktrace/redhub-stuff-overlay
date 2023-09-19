@@ -28,6 +28,7 @@ RDEPEND="${DEPEND}"
 
 src_configure() {
 	CMAKE_BUILD_TYPE="RelWithDebInfo"
-	use wayland && local mycmakeargs+=( -DCONFIG_WAYLAND=ON )
+	local mycmakeargs=( -DCONFIG_QT6=OFF )
+	use wayland && mycmakeargs+=( -DCONFIG_WAYLAND=ON )
 	cmake_src_configure
 }
