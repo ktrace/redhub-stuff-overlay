@@ -1,0 +1,19 @@
+diff --git a/auto/install b/auto/install
+index 72fd740..31a5bad 100644
+--- a/auto/install
++++ b/auto/install
+@@ -153,14 +153,8 @@ install:	build $NGX_INSTALL_PERL_MODULES
+ 		|| cp conf/angie.conf '\$(DESTDIR)$NGX_CONF_PATH'
+ 	cp conf/angie.conf '\$(DESTDIR)$NGX_CONF_PREFIX/angie.conf.default'
+ 
+-	test -d '\$(DESTDIR)`dirname "$NGX_PID_PATH"`' \\
+-		|| mkdir -p '\$(DESTDIR)`dirname "$NGX_PID_PATH"`'
+-
+ 	test -d '\$(DESTDIR)`dirname "$NGX_HTTP_LOG_PATH"`' \\
+ 		|| mkdir -p '\$(DESTDIR)`dirname "$NGX_HTTP_LOG_PATH"`'
+-
+-	test -d '\$(DESTDIR)$NGX_PREFIX/html' \\
+-		|| cp -R $NGX_HTML '\$(DESTDIR)$NGX_PREFIX'
+ END
+ 
+ 
