@@ -14,7 +14,10 @@ LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="~amd64"
 
-DEPEND="app-arch/zstd
+DEPEND="
+		app-arch/zstd
+		dev-libs/jemalloc
+		dev-libs/nanomsg-ng
 		media-libs/libpng
 		sci-libs/fftw
 		sci-libs/volk

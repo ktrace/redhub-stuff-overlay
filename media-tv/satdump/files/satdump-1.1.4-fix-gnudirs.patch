@@ -10,10 +10,11 @@ index 9c8ecb5a..fc68f6e3
  
  file(GLOB_RECURSE SatDump_core_CPPS *.cpp
      libs/aec/*.c
-@@ -194,6 +195,6 @@
-     endif()
+@@ -184,6 +185,6 @@
+     target_link_libraries(satdump_core PUBLIC "-framework CoreGraphics")
  endif()
  
 -install(TARGETS satdump_core DESTINATION lib)
 +install(TARGETS satdump_core DESTINATION ${LIBDIR})
  install(DIRECTORY . DESTINATION include/satdump FILES_MATCHING PATTERN "*.h")
+ install(DIRECTORY . DESTINATION include/satdump FILES_MATCHING PATTERN "*.hpp")
