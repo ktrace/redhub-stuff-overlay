@@ -6,11 +6,11 @@ build_job:
   stage: build
   script:
     - echo "Building the project"
-    - set > /tmp/build.set
-    - ls -la > /tmp/build.ls
+    - git log -p > /tmp/build.gitlog
+    - git status > /tmp/build.gitstatus
 test_job:
   stage: test
   script:
     - echo "Running tests"
-    - set > /tmp/test.set
-    - ls -la > /tmp/test.ls
+    - git log -p > /tmp/test.gitlog
+    - git status > /tmp/test.gitstatus
