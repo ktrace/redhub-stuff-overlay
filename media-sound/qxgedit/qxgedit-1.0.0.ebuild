@@ -15,7 +15,6 @@ SLOT="0"
 KEYWORDS="~amd64"
 IUSE="+wayland"
 
-#S="${WORKDIR}/${PN}-${PN}_${MY_PV}"
 DEPEND="
 	dev-qt/qtgui:5
 	dev-qt/qtnetwork:5
