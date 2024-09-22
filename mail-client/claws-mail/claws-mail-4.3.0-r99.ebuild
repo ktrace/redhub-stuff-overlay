@@ -1,37 +1,38 @@
-# Copyright 1999-2023 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{8..11} )
+PYTHON_COMPAT=( python3_{10..13} )
 
-inherit autotools desktop python-any-r1 xdg
+inherit desktop python-single-r1 xdg
 
 DESCRIPTION="An email client (and news reader) based on GTK+"
 HOMEPAGE="https://www.claws-mail.org/"
+
+LICENSE="GPL-3"
+SLOT="0"
 
 if [[ "${PV}" == *9999 ]] ; then
 	inherit git-r3
 	EGIT_REPO_URI="https://git.claws-mail.org/readonly/claws.git"
 else
 	SRC_URI="https://www.claws-mail.org/download.php?file=releases/${P}.tar.xz"
-	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ppc ~ppc64 ~riscv ~sparc ~x86"
+	KEYWORDS="~alpha ~amd64 arm arm64 ~hppa ~ppc ~ppc64 ~riscv ~sparc x86"
 fi
 
-SLOT="0"
-QA_PKGCONFIG_VERSION="${PV}.0"
-LICENSE="GPL-3"
-
-IUSE="archive bogofilter calendar clamav dbus debug dillo doc gdata +gnutls +imap ldap +libcanberra +libnotify litehtml networkmanager nls nntp +notification +oauth pdf perl +pgp rss session sieve smime spamassassin spam-report spell startup-notification svg valgrind webkit xface"
+IUSE="archive bogofilter calendar clamav dbus debug doc +gnutls +imap ldap +libcanberra +libnotify litehtml networkmanager nls nntp +notification +oauth pdf perl +pgp python rss session sieve smime spamassassin spam-report spell startup-notification svg valgrind webkit xface"
 REQUIRED_USE="
 	libcanberra? ( notification )
 	libnotify? ( notification )
 	networkmanager? ( dbus )
 	oauth? ( gnutls )
+	python? ( ${PYTHON_REQUIRED_USE} )
 	smime? ( pgp )
 "
 
 COMMONDEPEND="
+	>=dev-libs/glib-2.50:2
 	dev-libs/nettle:=
 	net-mail/ytnef
 	sys-libs/zlib:=
@@ -46,6 +47,7 @@ COMMONDEPEND="
 	)
 	bogofilter? ( mail-filter/bogofilter )
 	calendar? (
+		dev-lang/perl:=
 		>=dev-libs/libical-2.0.0:=
 		>=net-misc/curl-7.9.7
 	)
@@ -53,26 +55,33 @@ COMMONDEPEND="
 		>=dev-libs/dbus-glib-0.60
 		sys-apps/dbus
 	)
-	gdata? ( >=dev-libs/libgdata-0.17.2 )
-	dillo? ( www-client/dillo )
 	gnutls? ( >=net-libs/gnutls-3.0 )
 	imap? ( >=net-libs/libetpan-0.57 )
 	ldap? ( >=net-nds/openldap-2.0.7:= )
 	litehtml? (
-		>=dev-libs/glib-2.36:2
-		>=dev-libs/gumbo-0.10
+		>=dev-libs/gumbo-0.10:=
 		net-misc/curl
 		media-libs/fontconfig
 	)
 	nls? ( >=sys-devel/gettext-0.18 )
 	nntp? ( >=net-libs/libetpan-0.57 )
 	notification? (
-		dev-libs/glib:2
 		libcanberra? (  media-libs/libcanberra[gtk3] )
 		libnotify? ( x11-libs/libnotify )
 	)
+	perl? ( dev-lang/perl:= )
 	pdf? ( app-text/poppler[cairo] )
 	pgp? ( >=app-crypt/gpgme-1.0.0:= )
+	python? (
+		${PYTHON_DEPS}
+		$(python_gen_cond_dep '
+			dev-python/pygobject:3[cairo,${PYTHON_USEDEP}]
+		')
+	)
+	rss? (
+		dev-libs/libxml2
+		net-misc/curl
+	)
 	session? (
 		x11-libs/libICE
 		x11-libs/libSM
@@ -82,8 +91,8 @@ COMMONDEPEND="
 	spell? ( >=app-text/enchant-2.0.0:2= )
 	startup-notification? ( x11-libs/startup-notification )
 	svg? ( >=gnome-base/librsvg-2.40.5 )
-	valgrind? ( dev-util/valgrind )
-	webkit? ( net-libs/webkit-gtk:4 )
+	valgrind? ( dev-debug/valgrind )
+	webkit? ( net-libs/webkit-gtk:4.1 )
 "
 
 DEPEND="${COMMONDEPEND}
@@ -100,33 +109,22 @@ RDEPEND="${COMMONDEPEND}
 	clamav? ( app-antivirus/clamav )
 	networkmanager? ( net-misc/networkmanager )
 	pdf? ( app-text/ghostscript-gpl )
-	perl? ( dev-lang/perl:= )
-	rss? (
-		dev-libs/libxml2
-		net-misc/curl
-	)
 "
 
 PATCHES=(
 	"${FILESDIR}/${PN}-3.17.5-enchant-2_default.patch"
+	"${FILESDIR}/${PN}-4.1.1-fix_lto.patch"
 	"${FILESDIR}/${PN}-4.1.1-Fix-bug-4224-by-using-ring-buffer.patch"
-#	"${FILESDIR}/debug.patch"
+#	"${FILESDIR}/debug.patch
+
 )
 
-src_prepare() {
-	default
-	eautoreconf
-}
-
 src_configure() {
-	# Don't use libsoup-gnome (bug #565924)
-	export HAVE_LIBSOUP_GNOME=no
-
 	local myeconfargs=(
 		--disable-bsfilter-plugin
+		--disable-dillo-plugin
 		--disable-generic-umpc
 		--disable-jpilot #735118
-		--disable-python-plugin
 		--enable-acpi_notifier-plugin
 		--enable-address_keeper-plugin
 		--enable-alternate-addressbook
@@ -144,9 +142,10 @@ src_configure() {
 		$(use_enable clamav clamd-plugin)
 		$(use_enable dbus)
 		$(use_enable debug crash-dialog)
-		$(use_enable dillo dillo-plugin)
+		$(use_enable debug more-addressbook-debug)
+		$(use_enable debug more-ldap-debug)
+		$(use_enable debug more-archive-debug)
 		$(use_enable doc manual)
-		$(use_enable gdata gdata-plugin)
 		$(use_enable gnutls)
 		$(use_enable ldap)
 		$(use_enable litehtml litehtml_viewer-plugin)
@@ -159,6 +158,7 @@ src_configure() {
 		$(use_enable pgp pgpcore-plugin)
 		$(use_enable pgp pgpinline-plugin)
 		$(use_enable pgp pgpmime-plugin)
+		$(use_enable python python-plugin)
 		$(use_enable rss rssyl-plugin)
 		$(use_enable session libsm)
 		$(use_enable sieve managesieve-plugin)
@@ -184,7 +184,7 @@ src_configure() {
 }
 
 src_install() {
-	local DOCS=( AUTHORS ChangeLog* INSTALL* NEWS README* TODO* )
+	local DOCS=( AUTHORS ChangeLog* INSTALL* NEWS README* )
 	default
 
 	# Makefile install claws-mail.png in /usr/share/icons/hicolor/48x48/apps
