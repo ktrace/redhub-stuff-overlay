@@ -7,7 +7,7 @@ inherit autotools
 
 DESCRIPTION="Portable Rexx interpreter"
 HOMEPAGE="https://regina-rexx.sourceforge.io/"
-SRC_URI="https://sourceforge.net/projects/regina-rexx/files/regina-rexx/${PV}/${P}.tar.gz"
+SRC_URI="https://sourceforge.net/projects/regina-rexx/files/regina-rexx/${PV}/${P}.tar.gz/download -> ${P}.tar.gz"
 #S="${WORKDIR}/Regina-REXX-${PV}"
 
 LICENSE="LGPL-2.1 MPL-1.0"
