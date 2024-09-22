@@ -22,7 +22,7 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 BDEPEND="
 	virtual/pkgconfig
-	doc? ( app-doc/doxygen )"
+	doc? ( app-text/doxygen )"
 
 PATCHES=(
 	"${FILESDIR}"/${PN}-6.0.3-install_gcrypt.m4_file.patch

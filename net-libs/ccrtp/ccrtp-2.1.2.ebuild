@@ -9,10 +9,11 @@ DESCRIPTION="GNU ccRTP - Implementation of the IETF real-time transport protocol
 HOMEPAGE="https://www.gnu.org/software/ccrtp/"
 SRC_URI="mirror://gnu/${PN}/${P}.tar.gz"
 
-KEYWORDS="~amd64 ~ppc ~ppc64 x86"
 LICENSE="GPL-2"
-IUSE="doc"
 SLOT="0/2"
+KEYWORDS="amd64 x86"
+
+IUSE="doc"
 
 RDEPEND="
 	dev-libs/libgcrypt:0=
@@ -20,6 +21,6 @@ RDEPEND="
 "
 DEPEND="${RDEPEND}
 	virtual/pkgconfig
-	doc? ( app-doc/doxygen )
+	doc? ( app-text/doxygen )
 "
 PATCHES=( "${FILESDIR}"/"${PN}-${PV}"-gcrypt-only.patch )
