@@ -9,10 +9,13 @@ DESCRIPTION="GNU ZRTP C++ library provide ZRTP support to the GNU ccRTP stack"
 HOMEPAGE="https://www.gnu.org/software/ccrtp/zrtp.html"
 SRC_URI="https://github.com/wernerd/${PN^^}/archive/refs/tags/${PV}.tar.gz -> ${P}.tar.gz"
 
-KEYWORDS="~amd64 ~ppc ~ppc64 x86"
+S="${WORKDIR}/${P^^}"
+
 LICENSE="GPL-2"
-IUSE="doc"
 SLOT="0"
+KEYWORDS="~amd64 ~ppc ~ppc64 x86"
+
+IUSE="doc"
 
 RDEPEND="
 	dev-libs/libgcrypt:0=
@@ -25,5 +28,3 @@ DEPEND="${RDEPEND}
 
 PATCHES=( "${FILESDIR}/${P}-bool-fix.patch"
 		  "${FILESDIR}/${P}-no-git-commit.patch" )
-
-S="${WORKDIR}/${P^^}"

@@ -10,12 +10,12 @@ COMMIT="175f8ff4464591feb67728c7752ac752c7b48d43"
 DESCRIPTION="Canon CAPT-based printers (LBP-20xx/30xx)"
 HOMEPAGE="https://github.com/agalakhov/captdriver/"
 SRC_URI="https://github.com/agalakhov/captdriver/archive/${COMMIT}.tar.gz -> ${P}.tar.gz"
+
 S="${WORKDIR}/captdriver-${COMMIT}"
 
-LICENSE="GPLv3"
+LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="amd64 x86"
-IUSE=""
 
 RDEPEND="
 	>=net-print/cups-1.1.17

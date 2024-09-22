@@ -6,7 +6,7 @@ EAPI=8
 inherit autotools flag-o-matic
 
 DESCRIPTION="Portable C++ runtime for threads and sockets"
-HOMEPAGE="https://www.gnu.org/software/commoncpp"
+HOMEPAGE="https://www.gnu.org/software/commoncpp/"
 SRC_URI="mirror://gnu/commoncpp/${P}.tar.gz"
 
 LICENSE="LGPL-3"
