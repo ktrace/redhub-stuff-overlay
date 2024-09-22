@@ -3,13 +3,15 @@
 
 EAPI=8
 DISTUTILS_USE_PEP517=setuptools
-PYTHON_COMPAT=( python3_{11,12} )
+PYTHON_COMPAT=( python3_{11..13} )
 
 inherit distutils-r1
 
 DESCRIPTION="Weblate commandline client using Weblate's REST API."
 HOMEPAGE="https://weblate.org"
 SRC_URI="https://github.com/WeblateOrg/wlc/archive/${PV}.tar.gz -> ${P}.tar.gz"
+
+S="${WORKDIR}/wlc-${PV}"
 
 LICENSE="GPL-3+"
 SLOT="0"
@@ -27,7 +29,6 @@ DEPEND="
 RDEPEND="
 	${COMMON_DEPEND}
 "
-S="${WORKDIR}/wlc-${PV}"
 
 python_test() {
 	py.test -v
