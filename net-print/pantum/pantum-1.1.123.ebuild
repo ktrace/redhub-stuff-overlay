@@ -9,7 +9,7 @@ MY_PV=${PV//./_}
 
 DESCRIPTION="CUPS and SANE drivers for Pantum series printer and scanner."
 HOMEPAGE="https://www.pantum.ru/support/download/driver/"
-SRC_URI="https://drivers.pantum.ru/userfiles/files/download/drive/2013/0619/Pantum%20Ubuntu%20Driver%20V${MY_PV}.zip"
+SRC_URI="https://drivers.pantum.ru/userfiles/files/download/drive/2013/0619/Pantum%20Ubuntu%20Driver%20V${MY_PV}(1).zip"
 
 S="${WORKDIR}/Pantum Ubuntu Driver V${PV}"
 
