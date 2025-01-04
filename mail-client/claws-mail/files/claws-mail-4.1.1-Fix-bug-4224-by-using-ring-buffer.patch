@@ -10,9 +10,9 @@ index dc64cf4b8..da119c4e9 100644
 -	gint index;
 -	gint n;
 +//	gchar buf2[SC_HTMLBUFSIZE*4];
-+	gchar *invalid, *head, *tail;
-+	gint index, n;
-+	gint tail_size = 0;
++	const gchar *invalid;
++	gchar *head, *tail;
++	gint index, n, tail_size = 0;
  
 -	if (parser->fp == NULL)
 -		return SC_HTML_EOF;
