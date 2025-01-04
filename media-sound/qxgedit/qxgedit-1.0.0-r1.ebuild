@@ -16,17 +16,16 @@ KEYWORDS="~amd64"
 IUSE="+wayland"
 
 DEPEND="
-	dev-qt/qtgui:5
-	dev-qt/qtnetwork:5
-	dev-qt/qtsvg:5
-	dev-qt/qtwidgets:5
+	dev-qt/qtbase[gui,network,widgets]
+	dev-qt/qtsvg:6
 	media-libs/alsa-lib:0=
 "
+
 RDEPEND="${DEPEND}"
 
 src_configure() {
 	CMAKE_BUILD_TYPE="RelWithDebInfo"
-	local mycmakeargs=( -DCONFIG_QT6=OFF )
+	local mycmakeargs=( -DCONFIG_QT6=ON )
 	use wayland && mycmakeargs+=( -DCONFIG_WAYLAND=ON )
 	cmake_src_configure
 }
