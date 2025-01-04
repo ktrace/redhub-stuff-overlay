@@ -10,9 +10,9 @@ index dc64cf4b8..da119c4e9 100644
 -	gint index;
 -	gint n;
 +//	gchar buf2[SC_HTMLBUFSIZE*4];
-+	gchar *invalid, *head, *tail;
-+	gint index, n;
-+	gint tail_size = 0;
++	const gchar *invalid;
++	gchar *head, *tail;
++	gint index, n, tail_size = 0;
  
 -	if (parser->fp == NULL)
 -		return SC_HTML_EOF;
@@ -54,7 +54,7 @@ index dc64cf4b8..da119c4e9 100644
 +		if (!g_utf8_validate(buf,-1,&invalid)) {
 +			tail_size = head + n - invalid;
 +			tail = g_strdup(invalid);
-+			invalid[0] = '\0';
++			head[head - invalid] = '\0';
 +		}
  
 -		return SC_HTML_CONV_FAILED;
