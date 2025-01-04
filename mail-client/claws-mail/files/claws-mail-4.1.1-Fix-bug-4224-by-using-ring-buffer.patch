@@ -54,7 +54,7 @@ index dc64cf4b8..da119c4e9 100644
 +		if (!g_utf8_validate(buf,-1,&invalid)) {
 +			tail_size = head + n - invalid;
 +			tail = g_strdup(invalid);
-+			head[head - invalid] = '\0';
++			buf[n - tail_size] = '\0';
 +		}
  
 -		return SC_HTML_CONV_FAILED;
