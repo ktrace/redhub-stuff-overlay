@@ -1,0 +1,13 @@
+diff --git a/tests/lib/Test/Nginx.pm b/tests/lib/Test/Nginx.pm
+index 3dacec2..90ee5ca 100644
+--- a/tests/lib/Test/Nginx.pm
++++ b/tests/lib/Test/Nginx.pm
+@@ -49,7 +49,7 @@ sub new {
+ 	my $basename = basename($tname, '.t');
+ 
+ 	$self->{_testdir} = tempdir(
+-		"angie-test-$basename-XXXXXXXXXX",
++		"$basename-XXXXXXXX",
+ 		TMPDIR => 1
+ 	)
+ 		or die "Can't create temp directory: $!\n";

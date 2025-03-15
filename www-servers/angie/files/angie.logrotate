@@ -1,0 +1,14 @@
+/var/log/angie/*.log {
+	daily
+	missingok
+	rotate 31
+	compress
+	delaycompress
+	notifempty
+	sharedscripts
+	postrotate
+		if [ -f /run/angie/angie.pid ]; then
+			kill -USR1 $(cat /run/angie/angie.pid)
+		fi
+	endscript
+}
