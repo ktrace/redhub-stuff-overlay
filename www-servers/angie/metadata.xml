@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>ktrace@ya.ru</email>
+		<name>Victor Kustov</name>
+	</maintainer>
+	<longdescription lang="en">
+		Angie is a powerful and scalable web server, evolving the ideas of nginx:
+		- Created by former nginx developers to move in a new direction.
+		- Serves as a replacement for its predecessor, without requiring reconfiguration and module redevelopment.
+		- Includes all the features of nginx 1.27.3 and adds a number of new functions.
+	</longdescription>
+	<use>
+		<flag name="aio">Enable support of asynchronous file I/O (AIO) on FreeBSD and Linux</flag>
+		<flag name="mail">Enable support for mail proxy</flag>
+	</use>
+	<upstream>
+		<remote-id type="github">webserver-llc/angie</remote-id>
+	</upstream>
+</pkgmetadata>
