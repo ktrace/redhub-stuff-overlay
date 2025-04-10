@@ -1,0 +1,90 @@
+diff --git a/MainForm.cpp b/MainForm.cpp
+index 0fd2190..afea07b 100644
+--- a/MainForm.cpp
++++ b/MainForm.cpp
+@@ -10,7 +10,7 @@
+ #include <string>
+ #include <cstring>
+ #include <sstream>
+-#include <random>
++// #include <random>
+ #include <climits>
+ #include <QtCore>
+ #include <QString>
+@@ -28,6 +28,7 @@
+ #include <qwt_plot_curve.h>
+ #include <qwt_plot_grid.h>
+ #include <qwt_symbol.h>
++#include <qwt_text.h>
+ #include <qwt_plot_marker.h>
+ #include <QPointF>
+ #include <qwt_scale_draw.h>
+@@ -923,10 +924,10 @@ void MainForm::fillTable() {
+                 setData(Qt::DisplayRole, MainForm::cellDataRay[row].cenChan);
+         MainForm::cellDataRay[row].pTableItem[CENCHAN]->setTextAlignment(Qt::AlignCenter);
+         MainForm::cellDataRay[row].pTableItem[FIRST_SEEN]->
+-                setText(QDateTime::fromTime_t(MainForm::cellDataRay[row].firstSeen).toString("MM/dd-hh:mm:ss"));
++                setText(QDateTime::fromSecsSinceEpoch(MainForm::cellDataRay[row].firstSeen).toString("MM/dd-hh:mm:ss"));
+         MainForm::cellDataRay[row].pTableItem[FIRST_SEEN]->setTextAlignment(Qt::AlignCenter);
+         MainForm::cellDataRay[row].pTableItem[LAST_SEEN]->
+-                setText(QDateTime::fromTime_t(MainForm::cellDataRay[row].lastSeen).toString("MM/dd-hh:mm:ss"));
++                setText(QDateTime::fromSecsSinceEpoch(MainForm::cellDataRay[row].lastSeen).toString("MM/dd-hh:mm:ss"));
+         MainForm::cellDataRay[row].pTableItem[LAST_SEEN]->setTextAlignment(Qt::AlignCenter);
+         MainForm::cellDataRay[row].pTableItem[VENDOR]->
+                 setText(MainForm::cellDataRay[row].vendor.c_str());
+@@ -1036,7 +1037,7 @@ void MainForm::fillPlots() {
+                     MainForm::cellDataRay[tbi].signal ) );
+             }
+         } else {
+-            MainForm::cellDataRay[tbi].pBandCurve->setSamples(0, 0, 0);
++            MainForm::cellDataRay[tbi].pBandCurve->setSamples((double *)nullptr, (double *)nullptr, 0);
+         }
+         // now the signal history plot
+         int ixStart;
+@@ -1055,7 +1056,7 @@ void MainForm::fillPlots() {
+                     &(MainForm::cellDataRay[tbi].pHistory->signal[ixStart]), ixLength);
+         } else {
+ 
+-            MainForm::cellDataRay[tbi].pTimeCurve->setSamples(0, 0, 0);
++            MainForm::cellDataRay[tbi].pTimeCurve->setSamples((double *)nullptr, (double *)nullptr, 0);
+         }
+     }
+     MainForm::mainFormWidget.chan24Plot->replot();
+@@ -1126,7 +1127,9 @@ void MainForm::initNewCell(string macAddress, int tbi) {
+     MainForm::cellDataRay[tbi].pTableItem[PLOT]->setFlags(
+             Qt::ItemIsEnabled | Qt::ItemIsUserCheckable | Qt::ItemIsEditable);
+     MainForm::cellDataRay[tbi].pTableItem[PLOT]->setCheckState(Qt::Checked);
+-    MainForm::cellDataRay[tbi].pTableItem[SSID]->setTextColor(MainForm::cellDataRay[tbi].color);
++    //xxxxxxxxxxxxxxxxx
++    // MainForm::cellDataRay[tbi].pTableItem[SSID]->setTextColor(MainForm::cellDataRay[tbi].color);
++    MainForm::cellDataRay[tbi].pTableItem[SSID]->setForeground(MainForm::cellDataRay[tbi].color);
+ }
+ 
+ void MainForm::extractData(string tl, int &tbi, int &newBSS) {
+@@ -1424,4 +1427,4 @@ int MainForm::MinIntStr(const string &s) {
+ //    const std::string whiteSpaces( " \f\n\r\t\v" );
+ //    std::string::size_type pos = str.find_first_not_of( whiteSpaces );
+ //    str.erase( pos + 1 );    
+-//}
+\ No newline at end of file
++//}
+diff --git a/linssid-app.pro b/linssid-app.pro
+index 13fd75e..66953eb 100644
+--- a/linssid-app.pro
++++ b/linssid-app.pro
+@@ -19,11 +19,11 @@ QMAKE_CC = gcc
+ QMAKE_CXX = g++
+ DEFINES += 
+ INCLUDEPATH += /usr/include/boost
+-INCLUDEPATH += /usr/include/qt5
+-INCLUDEPATH += /usr/include/qwt
++INCLUDEPATH += /usr/include/qt6
++INCLUDEPATH += /usr/include/qwt6
+ LIBS += -lboost_regex
+-LIBS += /usr/lib/libqwt-qt5.so.6
+-QMAKE_CXXFLAGS += -std=c++11
++LIBS += -lqwt6-qt6
++#QMAKE_CXXFLAGS += -std=c++11
+ #
+ TARGET = linssid
+ target.path = /usr/sbin
