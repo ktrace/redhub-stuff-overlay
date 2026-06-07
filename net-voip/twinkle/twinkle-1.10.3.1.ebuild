@@ -1,4 +1,4 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2026 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -7,7 +7,9 @@ inherit  cmake xdg
 
 DESCRIPTION="Softphone for VoIP communcations using SIP protocol"
 HOMEPAGE="http://twinkle.dolezel.info/"
-SRC_URI="https://github.com/LubosD/twinkle/archive/v${PV}.tar.gz -> ${P}.tar.gz"
+SRC_URI="https://sourcecraft.dev/api/archive/ktrace/twinkle?rev=tag%3Av${PV}&format=tar.gz -> ${P}.tar.gz"
+
+S="${WORKDIR}/ktrace-twinkle-b73a191"
 
 LICENSE="GPL-2"
 SLOT="0"
@@ -16,10 +18,9 @@ IUSE="alsa g729 gsm speex zrtp"
 
 DEPEND="dev-libs/libxml2:2
 	dev-libs/ucommon
-	dev-qt/qtcore:5
-	dev-qt/qtgui:5
-	dev-qt/qtquickcontrols2:5
-	dev-qt/qtwidgets:5
+	dev-qt/qt5compat:6[qml]
+	dev-qt/qtbase:6[dbus,gui,widgets]
+	dev-qt/qtsvg:6
 	media-libs/fontconfig
 	media-libs/libsndfile
 	media-libs/libsndfile
@@ -33,11 +34,11 @@ DEPEND="dev-libs/libxml2:2
 	zrtp? ( net-libs/zrtpcpp )"
 
 RDEPEND="${DEPEND}"
-BDEPEND="dev-qt/linguist-tools:5
+BDEPEND="dev-qt/qttools:6[linguist]
 	sys-devel/bison
 	sys-devel/flex"
 
-PATCHES=( "${FILESDIR}/${P}"-g729.patch )
+#PATCHES=( "${FILESDIR}/${PN}"-1.10.3-g729.patch )
 
 src_configure() {
 
@@ -46,7 +47,7 @@ src_configure() {
 		-DWITH_G729=$(usex g729)
 		-DWITH_GSM=$(usex gsm)
 		-DWITH_ILBC=no
-		-DWITH_QT5=yes
+		-DWITH_QT6=yes
 		-DWITH_SPEEX=$(usex speex)
 		-DWITH_ZRTP=$(usex zrtp)
 	)
