@@ -1,0 +1,82 @@
+diff --git a/src/html.c b/src/html.c
+index 55ab55c6a..ace0578af 100644
+--- a/src/html.c
++++ b/src/html.c
+@@ -133,37 +133,57 @@ gchar *sc_html_parse(SC_HTMLParser *parser)
+ static SC_HTMLState sc_html_read_line(SC_HTMLParser *parser)
+ {
+ 	gchar buf[SC_HTMLBUFSIZE];
+-	gchar buf2[SC_HTMLBUFSIZE*4];
+-	gint index;
+-	gint n;
++//	gchar buf2[SC_HTMLBUFSIZE*4];
++	const gchar *invalid;
++	gchar *head;
++	gint index, n, tail_size = 0;
+ 
+-	if (parser->fp == NULL)
++	if (parser->fp == NULL) {
++//		g_warning("sc_html_read_line::exit --> parser->fp == NULL");
+ 		return SC_HTML_EOF;
+-
+-	n = claws_fread(buf, 1, sizeof(buf) - 1, parser->fp);
+-	if (n == 0) {
+-		parser->state = SC_HTML_EOF;
++	}
++	if (parser->state == SC_HTML_EOF) {
++//		g_warning("sc_html_read_line::exit --> parser->state == SC_HTML_EOF");
+ 		return SC_HTML_EOF;
+-	} else
+-		buf[n] = '\0';
++	}
+ 
+-	if (conv_convert(parser->conv, buf2, sizeof(buf2), buf) < 0) {
+-		index = parser->bufp - parser->buf->str;
++	index = parser->bufp - parser->buf->str;
+ 
+-		conv_utf8todisp(buf2, sizeof(buf2), buf);
+-		g_string_append(parser->buf, buf2);
++	do {
++//		g_warning("sc_html_read_line::do");
++		head = buf;
++		if (tail_size > 0)
++			head = buf + tail_size;
++
++		n = claws_fread(head, 1, sizeof(buf) - tail_size - 1, parser->fp);
++		if (n == 0) {
++			if (tail_size == 0) {
++//				g_warning("sc_html_read_line::end with EOF");
++				return SC_HTML_EOF;
++			} else {
++//				g_warning("sc_html_read_line::end with lost tail");
++				buf[tail_size] = '\0';
++				g_string_append(parser->buf, buf);
++				parser->bufp = parser->buf->str + index;
++				return SC_HTML_NORMAL;
++			}
++		}
+ 
+-		parser->bufp = parser->buf->str + index;
++		n += tail_size;
++		buf[n] = '\0';
++		tail_size = 0;
+ 
+-		return SC_HTML_CONV_FAILED;
+-	}
++		if (!g_utf8_validate(buf, -1, &invalid)) {
++			tail_size = buf + n - invalid;
++			buf[n - tail_size] = '\0';
++//			g_warning("sc_html_read_line::validate utf8; new tail %i bytes", tail_size);
++		}
+ 
+-	index = parser->bufp - parser->buf->str;
++		g_string_append(parser->buf, buf);
+ 
+-	g_string_append(parser->buf, buf2);
++	} while (tail_size > 0);
+ 
+ 	parser->bufp = parser->buf->str + index;
+-
+ 	return SC_HTML_NORMAL;
+ }
+ 
