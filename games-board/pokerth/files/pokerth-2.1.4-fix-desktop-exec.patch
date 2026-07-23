@@ -1,0 +1,10 @@
+--- a/pokerth.desktop
++++ b/pokerth.desktop
+@@ -27,7 +27,7 @@ Comment[tr]=Texas hold'em oyunu
+ Comment[uk]=Гра в техаський холдем
+ StartupWMClass=pokerth_client
+-Exec=env QT_SCALE_FACTOR=1 QT_PLUGIN_PATH=/usr/lib/x86_64-linux-gnu/qt6/plugins pokerth_client
++Exec=pokerth_client
+ Icon=pokerth
+ Terminal=false
+ Type=Application
