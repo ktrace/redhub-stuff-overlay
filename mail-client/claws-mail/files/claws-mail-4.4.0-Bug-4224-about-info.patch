@@ -2,13 +2,12 @@ diff --git a/src/gtk/about.c b/src/gtk/about.c
 index b6ca7e54c..186e08df8 100644
 --- a/src/gtk/about.c
 +++ b/src/gtk/about.c
-@@ -205,6 +205,14 @@ static GtkWidget *about_create_child_page_info(void)
+@@ -205,6 +205,13 @@ static GtkWidget *about_create_child_page_info(void)
  						 "indented-list-item", NULL);
  	ADD_TEXT("\n");
  
 +	gtk_text_buffer_insert_with_tags_by_name(buffer, &iter,
 +			(_("Applied Patches\n")), -1, "underlined-list-title", NULL);
-+	ADD_TEXT("\n");
 +	gtk_text_buffer_insert_with_tags_by_name(buffer, &iter,
 +			"  ktrace patched for Bug #4224\n",
 +			-1, "indented-list-item", NULL);

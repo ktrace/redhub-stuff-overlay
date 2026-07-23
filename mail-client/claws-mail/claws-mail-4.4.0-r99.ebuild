@@ -125,8 +125,6 @@ PATCHES=(
 	"${FILESDIR}/${PN}-4.1.1-fix_lto.patch"
 	"${FILESDIR}/${P}-Bug-4224-about-info.patch"
 	"${FILESDIR}/${P}-Fix-bug-4224-html-by-using-ring-buffer.patch"
-	"${FILESDIR}/${P}-Fix-bug-4224-procmime-ring-buffer.patch"
-
 )
 
 pkg_setup() {
