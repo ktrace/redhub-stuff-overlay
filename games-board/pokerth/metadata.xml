@@ -13,7 +13,12 @@
 		all over the world. A dedicated server for hosting Internet games
 		is also included.
 	</longdescription>
+	<use>
+		<flag name="client">client</flag>
+		<flag name="dedicated-server">selfhosted server</flag>
+	</use>
 	<upstream>
+		<remote-id type="github">pokerth/pokerth</remote-id>
 		<bugs-to>https://github.com/pokerth/pokerth/issues</bugs-to>
 		<doc>https://github.com/pokerth/pokerth/wiki</doc>
 	</upstream>
