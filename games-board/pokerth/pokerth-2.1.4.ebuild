@@ -68,6 +68,3 @@ src_compile() {
 	fi
 }
 
-src_install() {
-	cmake_src_install
-}
