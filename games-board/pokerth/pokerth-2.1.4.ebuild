@@ -20,16 +20,17 @@ IUSE="+client dedicated-server"
 REQUIRED_USE="|| ( client dedicated-server )"
 
 BDEPEND="
-	>=dev-build/cmake-3.15
 	dev-libs/protobuf
 	dev-qt/qttools:6[linguist]
 "
 
 COMMON_DEPEND="
 	>=dev-libs/boost-1.83:=[iostreams,thread,random,filesystem,program_options]
-	>=dev-libs/openssl-1.1:=
+	dev-libs/openssl:=
 	>=dev-libs/protobuf-2.3.0:=
-	>=dev-qt/qtbase-6.7.0:6[gui,sql,widgets,xml,network]
+	dev-cpp/abseil-cpp:=
+	dev-cpp/utf8-range:=
+	dev-qt/qtbase:6[gui,sql,widgets,xml,network]
 	dev-qt/qtmultimedia:6
 	dev-qt/qtsvg:6
 	dev-qt/qtwebsockets:6
@@ -46,6 +47,8 @@ RDEPEND="
 PATCHES=(
 	"${FILESDIR}/${P}-fix-desktop-exec.patch"
 	"${FILESDIR}/${P}-fix-protobuf-find-module.patch"
+	"${FILESDIR}/${P}-fix-abseil-link-linux.patch"
+	"${FILESDIR}/${P}-fix-install-libs.patch"
 )
 
 src_configure() {
@@ -57,20 +60,14 @@ src_configure() {
 
 src_compile() {
 	if use client; then
-		cmake_build pokerth_client
+		cmake_build pokerth_client pokerth_db
 	fi
 
 	if use dedicated-server; then
-		cmake_build pokerth_dedicated_server
+		cmake_build pokerth_dedicated_server pokerth_db
 	fi
 }
 
 src_install() {
-	if use client; then
-		cmake --install "${BUILD_DIR}" --component pokerth_client || die
-	fi
-
-	if use dedicated-server; then
-		cmake --install "${BUILD_DIR}" --component pokerth_dedicated_server || die
-	fi
+	cmake_src_install
 }
