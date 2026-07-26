@@ -9,28 +9,28 @@ DESCRIPTION="Horizon EDA - an Electronic Design Automation package for PCB desig
 HOMEPAGE="https://github.com/horizon-eda/horizon"
 SRC_URI="https://github.com/horizon-eda/horizon/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz"
 
+S="${WORKDIR}/horizon-${PV}"
+
 LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="~amd64"
-
-S="${WORKDIR}/horizon-${PV}"
 
 RESTRICT="test" # tests require a running display server
 
 COMMON_DEP="
 	app-arch/libarchive:=
-	dev-cpp/giomm:2.4
-	dev-cpp/glibmm:2.4
+	dev-cpp/glibmm:2
 	dev-cpp/gtkmm:3.0
 	dev-db/sqlite:3
 	dev-libs/glib:2
 	dev-libs/libgit2:=
 	dev-libs/libpcre2
+	gnome-base/librsvg:2
 	media-libs/fontconfig
 	media-libs/freetype
 	media-libs/glm
+	media-libs/libepoxy
 	media-libs/libpng:0=
-	media-libs/librsvg:2.0
 	net-libs/cppzmq
 	net-libs/zeromq
 	net-misc/curl
@@ -38,7 +38,6 @@ COMMON_DEP="
 	sys-apps/util-linux
 	virtual/libiconv
 	x11-libs/gtk+:3
-	x11-libs/libepoxy
 	x11-libs/pango
 "
 
