@@ -3,9 +3,7 @@
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{11..13} )
-
-inherit meson python-any-r1 xdg
+inherit meson xdg-utils
 
 DESCRIPTION="Horizon EDA - an Electronic Design Automation package for PCB design"
 HOMEPAGE="https://github.com/horizon-eda/horizon"
@@ -50,28 +48,12 @@ RDEPEND="${COMMON_DEP}
 "
 
 DEPEND="${COMMON_DEP}
-	${PYTHON_DEPS}
 	dev-util/glib-utils
 "
 
 BDEPEND="
 	virtual/pkgconfig
 "
-
-pkg_setup() {
-	if [[ ${MERGE_TYPE} != binary ]] ; then
-		python-any-r1_pkg_setup
-	fi
-}
-
-src_configure() {
-	local emesonargs=(
-		-Dpython=disabled
-		-Dpr-review=disabled
-		-Dgen-pkg=disabled
-	)
-	meson_src_configure
-}
 
 pkg_postinst() {
 	xdg_desktop_database_update
