@@ -38,9 +38,10 @@ index 55ab55c6a..ace0578af 100644
 -		g_string_append(parser->buf, buf2);
 +	do {
 +//		g_warning("sc_html_read_line::do");
-+		head = buf;
 +		if (tail_size > 0)
-+			head = buf + tail_size;
++			memmove(buf, invalid, tail_size);
++
++		head = buf + tail_size;
 +
 +		n = claws_fread(head, 1, sizeof(buf) - tail_size - 1, parser->fp);
 +		if (n == 0) {
