@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>ktrace@ya.ru</email>
+		<name>Victor V. Kustov</name>
+	</maintainer>
+	<use>
+		<flag name="scanner">Install SANE scanner backends, udev rules and dll.d registration for Katusha MFP devices</flag>
+	</use>
+	<upstream>
+		<doc>https://katusha-it.ru</doc>
+	</upstream>
+</pkgmetadata>
