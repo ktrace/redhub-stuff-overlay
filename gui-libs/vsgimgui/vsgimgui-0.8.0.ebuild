@@ -1,4 +1,4 @@
-# Copyright 2025 Gentoo Authors
+# Copyright 2026 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -42,8 +42,14 @@ DOCS=( README.md )
 src_unpack() {
 	default
 
-	if [[ -d "${WORKDIR}/imgui-${IMGUI_COMMIT}" ]]; then
-		mv "${WORKDIR}/imgui-${IMGUI_COMMIT}" "${S}/src/imgui" || die "Failed to unpack imgui"
-		mv "${WORKDIR}/implot-${IMPLOT_COMMIT}" "${S}/src/implot" || die "Failed to unpack implot"
+	rm -rf "${S}/src/imgui" "${S}/src/implot" || die "Failed to remove submodule placeholders"
+
+	mv "${WORKDIR}/imgui-${IMGUI_COMMIT}" "${S}/src/imgui" || die "Failed to unpack imgui"
+	mv "${WORKDIR}/implot-${IMPLOT_COMMIT}" "${S}/src/implot" || die "Failed to unpack implot"
+
+	# Sanity check: both headers must be in place, otherwise the CMake
+	# git-submodule fallback in CMakeLists.txt will be triggered.
+	if [[ ! -f "${S}/src/imgui/imgui.h" || ! -f "${S}/src/implot/implot.h" ]]; then
+		die "imgui/implot headers not found after unpack"
 	fi
 }

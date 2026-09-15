@@ -1,4 +1,4 @@
-# Copyright 2025 Gentoo Authors
+# Copyright 2026 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -18,25 +18,21 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64"
 
-# Qt6Pdf (CMake module Qt6::Pdf) is provided by dev-qt/qtwebengine[pdfium],
-# which builds the QtPdf module (qtpdf_build) on top of chromium's PDFium.
-# Verified 2026-09-11, see docs/QTPDF.md for the full evidence.
-
 BDEPEND="
 	>=dev-build/cmake-3.29
 	dev-qt/qttools:6[linguist]
 "
 
 COMMON_DEPEND="
-	gui-libs/vsg
-	gui-libs/vsgimgui
-	gui-libs/vsgxchange
 	dev-lang/lua:5.4
 	dev-libs/sol2
 	dev-qt/qtbase:6[gui,network,opengl,widgets,xml]
-	dev-qt/qtwebengine:6[pdfium]
 	dev-qt/qtserialbus:6
+	dev-qt/qtwebengine:6[pdfium]
 	dev-util/vulkan-headers
+	gui-libs/vsg
+	gui-libs/vsgimgui
+	gui-libs/vsgxchange
 	media-libs/ktx
 	media-libs/libsfml
 	media-libs/openal
@@ -53,6 +49,33 @@ RDEPEND="
 
 DOCS=( CHANGELOG README.md )
 
+PATCHES=(
+	"${FILESDIR}"/rrs-1.9.3-modbus-qt6-client.patch
+	"${FILESDIR}"/rrs-1.9.3-vsg116-build-fix.patch
+	"${FILESDIR}"/rrs-1.9.3-ktx-4.4-api.patch
+	"${FILESDIR}"/rrs-1.9.3-cmake-install.patch
+)
+
+src_prepare() {
+	cmake_src_prepare
+
+	# Upstream sets the legacy EXECUTABLE_OUTPUT_PATH / LIBRARY_OUTPUT_PATH
+	# variables to *relative* paths that were written for in-source builds
+	# (e.g. "../../bin", "../../../modules").  With an out-of-source build
+	# those paths resolve against each subproject's binary directory and all
+	# artifacts land one level above the build tree (e.g. <work>/bin instead
+	# of <build>/bin).  Point them at absolute paths inside the build
+	# directory so that the runtime tree (bin/, lib/, modules/, plugins/)
+	# is produced where the distro expects it.
+	sed -i \
+		-e 's|^\([[:space:]]*set *(EXECUTABLE_OUTPUT_PATH "\)[^"]*bin\(")\)|\1${CMAKE_BINARY_DIR}/bin\2|' \
+		-e 's|^\([[:space:]]*set *(LIBRARY_OUTPUT_PATH "\)[^"]*/lib\(")\)|\1${CMAKE_BINARY_DIR}/lib\2|' \
+		-e 's|^\([[:space:]]*set *(LIBRARY_OUTPUT_PATH "\)[^"]*/modules/\([^"]*\)\(")\)|\1${CMAKE_BINARY_DIR}/modules/\2\3|' \
+		-e 's|^\([[:space:]]*set *(LIBRARY_OUTPUT_PATH "\)[^"]*/modules\(")\)|\1${CMAKE_BINARY_DIR}/modules\2|' \
+		-e 's|^\([[:space:]]*set *(LIBRARY_OUTPUT_PATH "\)[^"]*/plugins\(")\)|\1${CMAKE_BINARY_DIR}/plugins\2|' \
+		$(find . -name CMakeLists.txt) || die "Failed to fix CMake output directories"
+}
+
 # The game is designed to run from its own directory tree: the binaries live
 # in bin/ and expect the game data (cfg/, routes/, data/, fonts/, themes/,
 # docs/), shared libraries (lib/) and modules (modules/) in the parent
@@ -63,30 +86,22 @@ DOCS=( CHANGELOG README.md )
 src_install() {
 	local rrsdir="/usr/share/rrs"
 
+	# The CMake install rules added by rrs-1.9.3-cmake-install.patch
+	# place the built runtime tree (bin/, lib/, modules/, plugins/) under
+	# ${EPREFIX}/usr/share/rrs.  Game data, the launcher wrapper and the
+	# desktop integration are installed below.
+	cmake_src_install
+
+	# The upstream SDK install rules (sdk/include, sdk/lib, sdk/lib/cmake)
+	# target add-on developers; they are not part of the game package.
+	rm -rf "${D}${EPREFIX}/usr/sdk" || die "Failed to remove upstream SDK files"
+
 	dodir "${rrsdir}"
 	cp -a cfg data docs fonts routes themes "${D}${rrsdir}/" || die "Failed to install game data"
 
-	# Executables: launcher, simulator, viewer, route-editor, tools
-	exeinto "${rrsdir}/bin"
-	doexe "${BUILD_DIR}"/bin/*
-
-	# Shared libraries (built without the usual "lib" prefix)
-	insinto "${rrsdir}/lib"
-	doins "${BUILD_DIR}"/lib/*.so
-
-	# Vehicle/equipment modules and Lua scripts (triggers_fabric.lua)
+	# Lua scripts (e.g. triggers_fabric.lua) shipped in the source tree
 	dodir "${rrsdir}/modules"
 	cp -a lua "${D}${rrsdir}/modules/" || die "Failed to install Lua modules"
-	if [[ -d "${BUILD_DIR}/modules" ]]; then
-		insinto "${rrsdir}/modules"
-		doins -r "${BUILD_DIR}"/modules/*
-	fi
-
-	# Runtime plugins (e.g. freejoy)
-	if [[ -d "${BUILD_DIR}/plugins" ]]; then
-		insinto "${rrsdir}/plugins"
-		doins "${BUILD_DIR}"/plugins/*.so
-	fi
 
 	# Directories written at runtime (logs, screenshots, scenarios)
 	dodir "${rrsdir}/logs" "${rrsdir}/screenshots"

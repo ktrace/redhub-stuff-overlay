@@ -1,0 +1,26 @@
+Qt 6 renamed QModbusRtuSerialMaster to QModbusRtuSerialClient; the old
+name is kept only as a deprecated alias and will be removed in Qt 7.0.
+Use the new class name to silence deprecation warnings.
+
+Upstream: https://github.com/maisvendoo/RRS
+
+--- a/simulator/modbus/src/master.cpp
++++ b/simulator/modbus/src/master.cpp
+@@ -3,7 +3,7 @@
+ #include    "CfgReader.h"
+ 
+ #include    <QVariant>
+-#include    <QModbusRtuSerialMaster>
++#include    <QModbusRtuSerialClient>
+ #include    <QModbusDataUnit>
+ #include    <QModbusReply>
+ #include    <QDir>
+@@ -47,7 +47,7 @@
+ 
+     try
+     {
+-        modbusDevice = new QModbusRtuSerialMaster(this);
++        modbusDevice = new QModbusRtuSerialClient(this);
+ 
+     } catch (const std::bad_alloc &)
+     {

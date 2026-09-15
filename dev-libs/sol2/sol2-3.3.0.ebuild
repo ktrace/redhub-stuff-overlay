@@ -1,4 +1,4 @@
-# Copyright 2025 Gentoo Authors
+# Copyright 2026 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -10,8 +10,6 @@ HOMEPAGE="https://github.com/ThePhD/sol2"
 
 SRC_URI="https://github.com/ThePhD/sol2/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz"
 
-S="${WORKDIR}/sol2-${PV}"
-
 LICENSE="MIT"
 SLOT="0"
 KEYWORDS="~amd64"
@@ -22,6 +20,10 @@ DEPEND="dev-lang/lua:5.4"
 RDEPEND="${DEPEND}"
 
 DOCS=( README.md )
+
+PATCHES=(
+	"${FILESDIR}/${P}"-gcc13-optional-ref-emplace.patch
+)
 
 src_configure() {
 	# sol2 is a header-only library; use the system Lua instead of the

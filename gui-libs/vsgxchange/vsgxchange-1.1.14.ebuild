@@ -1,4 +1,4 @@
-# Copyright 2025 Gentoo Authors
+# Copyright 2026 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -26,10 +26,6 @@ IUSE="assimp curl freetype gdal ktx meshoptimizer openexr openscenegraph"
 # no testsuite available (yet)
 RESTRICT="test"
 
-# NOTE: dev-libs/meshoptimizer, media-libs/ktx and media-libs/osg2vsg are not
-# yet present in the tree and must be added to this overlay (or another
-# repository) before enabling the corresponding USE flags.
-
 RDEPEND="
 	gui-libs/vsg
 	assimp? ( media-libs/assimp )
@@ -49,14 +45,14 @@ DOCS=( README.md )
 
 src_configure() {
 	local mycmakeargs=(
+		-DvsgXchange_GDAL=$(usex gdal)
+		-DvsgXchange_OSG=$(usex openscenegraph)
 		-DvsgXchange_assimp=$(usex assimp)
 		-DvsgXchange_curl=$(usex curl)
 		-DvsgXchange_freetype=$(usex freetype)
-		-DvsgXchange_GDAL=$(usex gdal)
 		-DvsgXchange_ktx=$(usex ktx)
 		-DvsgXchange_meshoptimizer=$(usex meshoptimizer)
 		-DvsgXchange_openexr=$(usex openexr)
-		-DvsgXchange_OSG=$(usex openscenegraph)
 	)
 
 	cmake_src_configure
