@@ -20,6 +20,5 @@
 	<upstream>
 		<remote-id type="github">pokerth/pokerth</remote-id>
 		<bugs-to>https://github.com/pokerth/pokerth/issues</bugs-to>
-		<doc>https://github.com/pokerth/pokerth/wiki</doc>
 	</upstream>
 </pkgmetadata>
