@@ -14,7 +14,7 @@ S="${WORKDIR}/${P}"
 
 LICENSE="AGPL-3+"
 SLOT="0"
-KEYWORDS="amd64"
+KEYWORDS="~amd64"
 IUSE="+client dedicated-server"
 
 REQUIRED_USE="|| ( client dedicated-server )"
@@ -45,9 +45,7 @@ RDEPEND="
 
 PATCHES=(
 	"${FILESDIR}/${P}-fix-desktop-exec.patch"
-	"${FILESDIR}/${P}-fix-protobuf-find-module.patch"
-	"${FILESDIR}/${P}-fix-abseil-link-linux.patch"
-	"${FILESDIR}/${P}-fix-install-libs.patch"
+	"${FILESDIR}/${P}-fix-cmake.patch"
 )
 
 src_configure() {
