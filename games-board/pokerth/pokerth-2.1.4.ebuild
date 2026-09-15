@@ -25,12 +25,20 @@ BDEPEND="
 "
 
 COMMON_DEPEND="
+<<<<<<< HEAD
 	>=dev-libs/boost-1.83:=[iostreams,thread,random,filesystem,program_options]
 	dev-libs/openssl:=
 	>=dev-libs/protobuf-2.3.0:=
 	dev-cpp/abseil-cpp:=
 	dev-cpp/utf8-range:=
 	dev-qt/qtbase:6[gui,sql,widgets,xml,network]
+=======
+	>=dev-libs/boost-1.83:=
+	>=dev-libs/protobuf-2.3.0:=
+	dev-cpp/abseil-cpp:=
+	dev-libs/openssl:=
+	dev-qt/qtbase:6[gui,network,sql,widgets,xml]
+>>>>>>> rail-simul
 	dev-qt/qtmultimedia:6
 	dev-qt/qtsvg:6
 	dev-qt/qtwebsockets:6
@@ -67,4 +75,3 @@ src_compile() {
 		cmake_build pokerth_dedicated_server pokerth_db
 	fi
 }
-

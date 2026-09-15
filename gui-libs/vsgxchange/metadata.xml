@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>ktrace@ya.ru</email>
+		<name>Victor V. Kustov</name>
+	</maintainer>
+	<use>
+		<flag name="assimp">Enable Assimp 3D model import support</flag>
+		<flag name="freetype">Enable FreeType font rendering support</flag>
+		<flag name="gdal">Enable GDAL geospatial data support</flag>
+		<flag name="ktx">Enable KTX texture support</flag>
+		<flag name="meshoptimizer">Enable meshoptimizer mesh shader optimization support</flag>
+		<flag name="openscenegraph">Enable OpenSceneGraph (osg2vsg) import support</flag>
+	</use>
+	<upstream>
+		<remote-id type="github">vsg-dev/vsgXchange</remote-id>
+	</upstream>
+</pkgmetadata>

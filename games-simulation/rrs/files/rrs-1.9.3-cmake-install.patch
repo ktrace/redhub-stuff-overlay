@@ -1,0 +1,33 @@
+Complete the CMake install rules for the game runtime tree.
+
+The project only installs its SDK (sdk/include, sdk/lib, sdk/lib/cmake).
+The game itself is self-contained: executables live in bin/ and expect the
+runtime data (cfg/, routes/, ...), shared libraries (lib/) and modules
+(modules/) in the parent directory (RPATH is $ORIGIN/../lib).  Add
+install() rules that place the built tree under
+${CMAKE_INSTALL_PREFIX}/share/rrs, so that `cmake --install` (and the
+Gentoo cmake_src_install phase) can install the built artifacts.
+
+Upstream: https://github.com/maisvendoo/RRS
+
+--- a/CMakeLists.txt	2026-07-25 21:14:34.000000000 +0300
++++ b/CMakeLists.txt	2026-09-13 21:40:02.535972418 +0300
+@@ -117,3 +117,18 @@
+         ${CMAKE_CURRENT_BINARY_DIR}/RRSConfigVersion.cmake
+     DESTINATION sdk/lib/cmake
+ )
++
++# ==== redhub-common overlay: complete the install rules for the game tree ====
++#
++# The simulator is self-contained: executables live in bin/ and expect the
++# runtime data (cfg/, routes/, ...), shared libraries (lib/) and modules
++# (modules/) in the parent directory (RPATH is $ORIGIN/../lib).  Install the
++# whole runtime tree under ${CMAKE_INSTALL_PREFIX}/share/rrs so that
++# `cmake --install` (and the Gentoo cmake_src_install phase) can be used.
++# The game data (cfg/, routes/, themes/ ...), launcher wrapper and desktop
++# integration are packaged by the distribution.
++include(GNUInstallDirs)
++install(DIRECTORY "${CMAKE_BINARY_DIR}/bin/"     DESTINATION "${CMAKE_INSTALL_DATADIR}/rrs/bin"     USE_SOURCE_PERMISSIONS OPTIONAL)
++install(DIRECTORY "${CMAKE_BINARY_DIR}/lib/"     DESTINATION "${CMAKE_INSTALL_DATADIR}/rrs/lib"     USE_SOURCE_PERMISSIONS OPTIONAL)
++install(DIRECTORY "${CMAKE_BINARY_DIR}/modules/" DESTINATION "${CMAKE_INSTALL_DATADIR}/rrs/modules" USE_SOURCE_PERMISSIONS OPTIONAL)
++install(DIRECTORY "${CMAKE_BINARY_DIR}/plugins/" DESTINATION "${CMAKE_INSTALL_DATADIR}/rrs/plugins" USE_SOURCE_PERMISSIONS OPTIONAL)

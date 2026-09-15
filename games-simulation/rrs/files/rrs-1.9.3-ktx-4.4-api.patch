@@ -1,0 +1,43 @@
+Fix build with KTX 4.4 (media-libs/ktx-4.4.x):
+
+- ktxBasisParams: the codec field and KTX_BASIS_CODEC_* constants were
+  removed in KTX 4.4; ETC1S is now selected by leaving uastc at
+  KTX_FALSE (set explicitly here for clarity).
+- etc1sCompressionLevel was renamed to compressionLevel (range [0,6],
+  KTX_ETC1S_DEFAULT_COMPRESSION_LEVEL = 2).
+
+Upstream: https://github.com/maisvendoo/RRS
+
+--- a/tools/dmd2gltf/src/Application.cpp	2026-09-13 19:38:36.524810318 +0300
++++ b/tools/dmd2gltf/src/Application.cpp	2026-09-13 19:38:36.569431613 +0300
+@@ -1092,13 +1092,13 @@
+     params.structSize = sizeof(ktxBasisParams);  // Всегда первым полем
+ 
+     // --encode basis-lz
+-    params.codec = KTX_BASIS_CODEC_ETC1S;
++    params.uastc = KTX_FALSE;  // ETC1S base (KTX 4.4 API)
+ 
+     // --qlevel (по умолчанию 128)
+     params.qualityLevel = 128;
+ 
+     // --clevel (CLI по умолчанию 1, хотя в libktx константа = 2)
+-    params.etc1sCompressionLevel = 1;
++    params.compressionLevel = 1;
+ 
+     // Потоки
+     params.threadCount = 1;
+--- a/tools/texture-compressor/texture-compressor/src/compressor.cpp	2026-09-13 19:38:36.528267156 +0300
++++ b/tools/texture-compressor/texture-compressor/src/compressor.cpp	2026-09-13 19:38:36.578669333 +0300
+@@ -130,10 +130,10 @@
+ 
+     // КРИТИЧНО: Обязательно устанавливаем уровень сжатия ETC1S
+     // Ваше значение 1 - допустимо, но используйте константу для ясности
+-    params.etc1sCompressionLevel = 2; // KTX_ETC1S_DEFAULT_COMPRESSION_LEVEL = 2
++    params.compressionLevel = 2; // KTX_ETC1S_DEFAULT_COMPRESSION_LEVEL = 2
+ 
+     // --encode basis-lz
+-    params.codec = KTX_BASIS_CODEC_ETC1S;
++    params.uastc = KTX_FALSE;  // ETC1S base (KTX 4.4 API)
+ 
+     // --qlevel (по умолчанию 128)
+     params.qualityLevel = cfg.qualityLevel;
