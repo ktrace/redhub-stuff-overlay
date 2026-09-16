@@ -1,0 +1,51 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 63077aa..188b6ce 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -77,9 +77,9 @@ endif()
+ 
+ # vcpkg uses CONFIG mode for all platforms
+ if(DEFINED VCPKG_TOOLCHAIN OR DEFINED CMAKE_TOOLCHAIN_FILE)
+-    find_package(Protobuf CONFIG REQUIRED)
++    find_package(Protobuf MODULE REQUIRED)
+ else()
+-    find_package(Protobuf REQUIRED)
++    find_package(Protobuf MODULE REQUIRED)
+ endif()
+ 
+ if(ANDROID)
+@@ -290,6 +290,24 @@ elseif(APPLE)
+         utf8_range::utf8_range
+         utf8_range::utf8_validity
+     )
++elseif(UNIX)
++    # Linux (Gentoo): protobuf may require abseil and utf8_range symbols
++    find_package(absl CONFIG REQUIRED)
++    find_package(utf8_range CONFIG REQUIRED)
++    target_link_libraries(pokerth_protocol PUBLIC 
++        absl::base
++        absl::log_internal_message
++        absl::log_internal_check_op
++        absl::strings
++        absl::cord
++        absl::status
++        absl::statusor
++        absl::hash
++        absl::flat_hash_map
++        absl::raw_hash_set
++        utf8_range::utf8_range
++        utf8_range::utf8_validity
++    )
+ elseif(WIN32)
+     # For Windows: link only the Abseil libraries without PROTOBUF_USE_DLLS
+     target_link_libraries(pokerth_protocol PUBLIC 
+@@ -358,3 +376,9 @@ target_link_libraries(pokerth_globalnotice
+     Qt6::Xml
+ )
+ target_include_directories(pokerth_globalnotice PRIVATE ${CMAKE_SOURCE_DIR}/src)
++
++# Install internal libraries
++install(TARGETS pokerth_db pokerth_dbofficial
++    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
++)
++

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="project">
+		<email>support@calculate.ru</email>
+		<name>Mir Calculate</name>
+		<description>Calculate Overlay</description>
+	</maintainer>
+	<longdescription>
+		PokerTH is a Texas Hold'em poker game written in C++ with Qt.
+		You can play against up to nine computer-driven players on your own
+		computer, or join an Internet game and play with other poker fans
+		all over the world. A dedicated server for hosting Internet games
+		is also included.
+	</longdescription>
+	<use>
+		<flag name="client">client</flag>
+		<flag name="dedicated-server">selfhosted server</flag>
+	</use>
+	<upstream>
+		<remote-id type="github">pokerth/pokerth</remote-id>
+		<bugs-to>https://github.com/pokerth/pokerth/issues</bugs-to>
+		<doc>https://github.com/pokerth/pokerth/wiki</doc>
+	</upstream>
+</pkgmetadata>

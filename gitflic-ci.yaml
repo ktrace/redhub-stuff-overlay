@@ -1,18 +1,23 @@
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
 stages:
   - test
   - build
+
+test_job:
+  stage: test
+  script:
+    - echo "Running tests"
+    - ansible-playbook ./tester.yaml
 
 build_job:
   stage: build
   script:
     - echo "Building the project"
-    - git log -p > /tmp/build.gitlog
-    - git status > /tmp/build.gitstatus
-    - set > /tmp/build.set
-test_job:
-  stage: test
-  script:
-    - echo "Running tests"
-    - git log -p > /tmp/test.gitlog
-    - git status > /tmp/test.gitstatus
-    - set > /tmp/test.set
+    - ansible-playbook ./builder.yaml
+  artifacts:
+    when: always
+    paths:
+      - pkg/

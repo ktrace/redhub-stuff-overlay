@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Russian Railway Simulator
+Name[ru]=Российский железнодорожный симулятор
+GenericName=Railway simulator
+Comment=Free, open-source railway simulator of Russian mainline locomotives
+Comment[ru]=Свободный симулятор российских магистральных локомотивов и поездов
+Exec=rrs
+Icon=rrs
+Categories=Game;Simulation;
+Terminal=false
+StartupNotify=false
