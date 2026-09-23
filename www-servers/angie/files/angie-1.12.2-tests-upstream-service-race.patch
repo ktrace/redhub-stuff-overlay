@@ -1,0 +1,36 @@
+Fix intermittent failures of the upstream service (SRV) tests.
+
+Angie resolves "resolve" stream/http upstreams eagerly at worker startup,
+caching the DNS stub's default answer for the configured "valid" time.
+The tests update the stub and then wait for the resolver to re-resolve,
+but a single re-resolution cycle may still be processed by angie after the
+very next test connection is made, so the connection can use the previous
+set of upstream addresses (e.g. "127.0.0.1:PORT" instead of
+"127.0.0.201:PORT").  This shows up as flaky failures of tests like
+'log - A' / 'log - A full' in stream_upstream_service.t.
+
+Wait for two full re-resolution cycles (instead of one) after an update so
+that angie had enough time to apply the new addresses to the upstream peer
+list before the test proceeds with connections.
+
+--- a/tests/stream_upstream_service.t
++++ b/tests/stream_upstream_service.t
+@@ -327,7 +327,7 @@
+ 
+ 		# let resolver cache expire to finish upstream reconfiguration
+ 		select undef, undef, undef, 0.5;
+-		last unless ($gen + $plan > $gen2);
++		last unless ($gen + 2 * $plan > $gen2);
+ 	}
+ }
+ 
+--- a/tests/upstream_service.t
++++ b/tests/upstream_service.t
+@@ -280,7 +280,7 @@
+ 
+ 		# let resolver cache expire to finish upstream reconfiguration
+ 		select undef, undef, undef, 0.5;
+-		last unless ($gen + $plan > $gen2);
++		last unless ($gen + 2 * $plan > $gen2);
+ 	}
+ }

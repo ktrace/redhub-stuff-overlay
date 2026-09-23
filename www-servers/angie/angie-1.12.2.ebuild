@@ -1,4 +1,4 @@
-# Copyright 2025 Gentoo Authors
+# Copyright 2026 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -38,15 +38,11 @@ BDEPEND="
 	)"
 
 PATCHES=(
-	"${FILESDIR}"/${PN}-shorten-temp-path.patch
+	"${FILESDIR}"/${P}-shorten-temp-path.patch
+	"${FILESDIR}"/${P}-tests-upstream-service-race.patch
 	"${FILESDIR}"/${PN}-fix-perl-install-path.patch
 	"${FILESDIR}"/${PN}-fix-auto-install-paths.patch
 )
-
-src_prepare() {
-	default
-	# Дополнительные шаги подготовки, если необходимо
-}
 
 pkg_setup() {
 	ANGIE_HOME="/var/lib/angie"

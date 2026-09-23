@@ -1,0 +1,11 @@
+--- a/tests/lib/Test/Nginx.pm
++++ b/tests/lib/Test/Nginx.pm
+@@ -64,7 +64,7 @@
+ 
+ 	} else {
+ 		$self->{_testdir} = tempdir(
+-			"angie-test-$basename-XXXXXXXXXX",
++			"${basename}XXXX",
+ 			TMPDIR => 1
+ 		)
+ 			or die "Can't create temp directory: $!\n";
